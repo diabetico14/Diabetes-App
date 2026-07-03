@@ -4,9 +4,133 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Diabetes Tracking App</title>
-  <!-- Conexión con el archivo CSS separado -->
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="style.css">
+  
+  <!-- ========================================== -->
+  <!-- ESTILOS CSS (Todo integrado aquí) -->
+  <!-- ========================================== -->
+  <style>
+    :root {
+      --primary: #007aff;
+      --bg: #f2f2f7;
+      --card-bg: #ffffff;
+      --text: #1c1c1e;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg); 
+      color: var(--text); 
+      margin: 0; 
+      padding: 0; 
+      display: flex; 
+      justify-content: center;
+    }
+
+    .app-container {
+      width: 100%; 
+      max-width: 430px; 
+      min-height: 100vh; 
+      box-sizing: border-box; 
+      padding: 16px 16px 90px 16px; 
+      position: relative;
+    }
+
+    h2 { font-size: 28px; margin-bottom: 20px; font-weight: 700; }
+    h4 { margin: 0 0 8px 0; color: #8e8e93; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .card {
+      background: var(--card-bg); 
+      border-radius: 12px; 
+      padding: 16px; 
+      margin-bottom: 16px; 
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .alert-card { border-left: 4px solid #ff9500; }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+
+    input, select, textarea {
+      width: 100%; 
+      padding: 10px; 
+      border: 1px solid #c7c7cc; 
+      border-radius: 8px; 
+      font-size: 16px; 
+      box-sizing: border-box; 
+      background: #fff;
+    }
+
+    button {
+      width: 100%; 
+      background: var(--primary); 
+      color: white; 
+      border: none; 
+      padding: 12px; 
+      border-radius: 8px; 
+      font-size: 16px; 
+      font-weight: 600; 
+      cursor: pointer;
+    }
+
+    button:active { opacity: 0.8; }
+
+    .bottom-nav {
+      position: fixed; 
+      bottom: 0; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      width: 100%; 
+      max-width: 430px; 
+      height: 65px;
+      background: rgba(255,255,255,0.9); 
+      backdrop-filter: blur(10px); 
+      border-top: 1px solid #c7c7cc; 
+      display: flex; 
+      justify-content: space-around; 
+      align-items: center; 
+      z-index: 1000;
+    }
+
+    .nav-btn {
+      background: none; 
+      color: #8e8e93; 
+      border: none; 
+      padding: 5px; 
+      font-size: 11px; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      width: auto;
+      cursor: pointer;
+    }
+
+    .nav-btn span { font-size: 20px; margin-bottom: 2px; }
+    .nav-btn.active { color: var(--primary); font-weight: bold; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .alimento-item { 
+      background: white; 
+      border-radius: 12px; 
+      padding: 14px; 
+      margin-bottom: 10px; 
+      border: 1px solid #e5e5ea; 
+    }
+
+    .alimento-header { display: flex; justify-content: space-between; align-items: center; }
+    .badge { background: #e5e5ea; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .badge.absorcion { background: #e3f2fd; color: #007aff; }
+
+    .stats-grid { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 8px; 
+      margin-top: 10px; 
+      font-size: 13px; 
+      color: #636366; 
+    }
+  </style>
 </head>
 <body>
 
@@ -16,7 +140,7 @@
   <!-- TAB: INICIO -->
   <!-- ========================================== -->
   <section id="tab-inicio" class="tab-content active">
-    <h2>Inicio 🩸</h2>
+    <h2>Inicio 🏠</h2>
     
     <div class="card alert-card">
       <h4>Último registro</h4>
@@ -24,8 +148,8 @@
     </div>
 
     <div class="card">
-      <h4>Mediciones pendientes (Últimas 5 horas)</h4>
-      <div id="inicio-pendientes">No hay mediciones pendientes.</div>
+      <h4>Registros pendientes (+1h a +4h)</h4>
+      <div id="inicio-pendientes">No tienes mediciones postprandiales pendientes de las últimas 5 horas.</div>
     </div>
   </section>
 
@@ -33,21 +157,22 @@
   <!-- TAB: REGISTRO -->
   <!-- ========================================== -->
   <section id="tab-registro" class="tab-content">
-    <h2>Comida y Dosis 🍔</h2>
+    <h2>Registrar Comida 📝</h2>
     
     <div class="card">
       <div class="form-group">
-        <label>Alimento / Plato:</label>
+        <label>1. Selecciona el alimento/plato:</label>
         <select id="reg-alimento-id" onchange="actualizarPrevisualizacionHistorica()">
-          <!-- Se puebla automáticamente vía JS -->
+          <!-- Se puebla automáticamente -->
         </select>
       </div>
 
-      <!-- Panel de historial inteligente para el alimento seleccionado -->
       <div id="previsualizacion-historica" class="stats-grid card" style="display:none; background:#f2f2f7; margin-bottom:12px; padding:10px;"></div>
       
+      <h3 style="font-size:14px; color:#007aff; margin-top:15px; margin-bottom:10px;">✨ ANTES DE COMER</h3>
+
       <div class="form-group">
-        <label>Glucemia Previa (mg/dL):</label>
+        <label>Glucemia actual (mg/dL):</label>
         <input type="number" id="reg-glucemia-pre" placeholder="Ej: 110">
       </div>
 
@@ -57,13 +182,14 @@
       </div>
 
       <div class="form-group">
-        <label>Deporte previo / Actividad:</label>
+        <label>Deporte previo:</label>
         <select id="reg-deporte-previo">
-          <option value="Ninguno">Ninguno (Normal)</option>
-          <option value="Ligero">Ligero</option>
-          <option value="Intenso">Intenso</option>
+          <option value="No">No</option>
+          <option value="Sí">Sí</option>
         </select>
       </div>
+
+      <h3 style="font-size:14px; color:#34c759; margin-top:15px; margin-bottom:10px;">🍔 COMIDA Y DOSIS</h3>
 
       <div class="form-group">
         <label>Raciones de HC reales:</label>
@@ -71,7 +197,7 @@
       </div>
       
       <div class="form-group">
-        <label>Insulina Total Inyectada (U):</label>
+        <label>Insulina Inyectada (U):</label>
         <input type="number" id="reg-insulina-inyectada" placeholder="Introduce unidades" step="0.5">
       </div>
       
@@ -79,17 +205,16 @@
         <label>Tipo de Bolo:</label>
         <select id="reg-tipo-bolo">
           <option value="Normal">Normal</option>
-          <option value="Dual">Dual (Dividir dosis)</option>
-          <option value="Extendido">Extendido</option>
+          <option value="Dual">Dual</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label>Comentarios / Notas:</label>
+        <label>Comentarios:</label>
         <textarea id="reg-comentarios" placeholder="Notas sobre la comida..." rows="2"></textarea>
       </div>
 
-      <button onclick="guardarRegistroComida()">Confirmar e Inyectar 💉</button>
+      <button onclick="guardarRegistroComida()">Confirmar e inyectar 💉</button>
     </div>
   </section>
 
@@ -99,46 +224,46 @@
   <section id="tab-calculadora" class="tab-content">
     <h2>Calculadora 🧮</h2>
     <div class="card">
-      <label>Selecciona ingrediente de la biblioteca:</label>
+      <label>Añadir alimento al plato:</label>
       <select id="calcu-alimento-id">
-        <!-- Se puebla automáticamente vía JS -->
+        <!-- Se puebla automáticamente -->
       </select>
       <div class="form-group" style="margin-top:10px;">
-        <label>Multiplicador de porción (Ej: 1 = ración base, 1.5 = ración y media):</label>
+        <label>Multiplicador de raciones (Ej: 1 si es tu ración habitual, 2 si es el doble):</label>
         <input type="number" id="calcu-multiplicador" value="1" step="0.1">
       </div>
-      <button onclick="agregarALaCalculadora()" style="background:#5856d6;">➕ Añadir al Combo</button>
+      <button onclick="agregarALaCalculadora()" style="background:#5856d6;">➕ Añadir al plato</button>
     </div>
 
     <div class="card">
-      <h4>Plato actual (Combo):</h4>
+      <h4>Plato actual construido:</h4>
       <ul id="calcu-lista-items" style="padding-left:20px; font-size:14px; margin-bottom:15px;">
         <li>El plato está vacío</li>
       </ul>
       <hr style="border:0; border-top:1px solid #eee; margin-bottom:10px;">
-      <p><b>Total Raciones sugeridas:</b> <span id="calcu-total-hc">0</span> raciones</p>
-      <p><b>Absorción detectada:</b> <span id="calcu-absorcion-sugerida" style="color:var(--primary); font-weight:bold;">--</span></p>
+      <p><b>Total Raciones Estimadas:</b> <span id="calcu-total-hc">0</span> raciones</p>
+      <p><b>Absorción combinada sugerida:</b> <span id="calcu-absorcion-sugerida" style="color:var(--primary); font-weight:bold;">--</span></p>
       
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;">
-        <button onclick="volcarCalculadoraARegistro()">📝 Llevar a Dosis</button>
-        <button onclick="guardarComboComoPlatoHabitual()" style="background:#34c759;">💾 Guardar Plato</button>
+        <button onclick="volcarCalculadoraARegistro()">📝 Volcar a registro</button>
+        <button onclick="guardarComboComoPlatoHabitual()" style="background:#34c759;">💾 Guardar como plato habitual</button>
       </div>
     </div>
   </section>
 
   <!-- ========================================== -->
-  <!-- TAB: RECOMENDACIONES (INTELIGENCIA) -->
+  <!-- TAB: RECOMENDACIONES -->
   <!-- ========================================== -->
   <section id="tab-recomendaciones" class="tab-content">
-    <h2>Análisis Inteligente 💡</h2>
+    <h2>Recomendaciones 💡</h2>
     <div class="card">
-      <label>Selecciona un alimento para ver tu patrón de éxito:</label>
+      <label>Selecciona un alimento para analizar tu histórico:</label>
       <select id="rec-alimento-id" onchange="generarRecomendacionInteligente()">
-        <!-- Se puebla automáticamente vía JS -->
+        <!-- Se puebla automáticamente -->
       </select>
     </div>
     <div id="rec-resultado">
-      <p style="text-align:center; color:#8e8e93;">Selecciona un alimento para analizar.</p>
+      <p style="text-align:center; color:#8e8e93;">Selecciona un alimento de la lista para activar el módulo inteligente.</p>
     </div>
   </section>
 
@@ -146,35 +271,34 @@
   <!-- TAB: BIBLIOTECA -->
   <!-- ========================================== -->
   <section id="tab-biblioteca" class="tab-content">
-    <h2>Biblioteca 📋</h2>
+    <h2>Biblioteca 📚</h2>
     
-    <!-- Formulario colapsable para añadir nuevos alimentos -->
     <details class="card" style="margin-bottom:15px;">
-      <summary style="font-weight:bold; cursor:pointer; color:var(--primary);">➕ Añadir Nuevo Alimento o Ingrediente</summary>
+      <summary style="font-weight:bold; cursor:pointer; color:var(--primary);">▶ ➕ Añadir nuevo elemento</summary>
       <div style="margin-top:15px;">
         <div class="form-group">
           <label>Nombre del alimento:</label>
-          <input type="text" id="bib-nombre" placeholder="Ej: Pizza Margarita">
+          <input type="text" id="bib-nombre" placeholder="Ej: Arroz integral">
         </div>
         <div class="form-group">
           <label>Categoría:</label>
-          <input type="text" id="bib-categoria" placeholder="Ej: Cenas, Pasta, Desayuno">
+          <input type="text" id="bib-categoria" placeholder="Ej: Almuerzo, Desayuno">
         </div>
         <div class="form-group">
-          <label>Raciones de HC habituales por porción:</label>
-          <input type="number" id="bib-carbos" placeholder="Ej: 5" step="0.1">
+          <label>Raciones de HC habituales:</label>
+          <input type="number" id="bib-carbos" placeholder="Ej: 4" step="0.1">
         </div>
         <div class="form-group">
-          <label>Velocidad de absorción:</label>
+          <label>Absorción:</label>
           <select id="bib-absorcion">
             <option value="Rápida">Rápida</option>
             <option value="Media" selected>Media</option>
-            <option value="Lenta/Grasas">Lenta / Grasas (Doble Pico)</option>
+            <option value="Lenta/Grasas">Lenta/Grasas</option>
           </select>
         </div>
         <div class="form-group">
           <label>Notas adicionales:</label>
-          <input type="text" id="bib-notas" placeholder="Ej: Tomar preferentemente con bolo dual">
+          <input type="text" id="bib-notas" placeholder="Opcional">
         </div>
         <button onclick="guardarAlimento()">Guardar en la Biblioteca</button>
       </div>
@@ -185,7 +309,7 @@
     </div>
 
     <div id="lista-alimentos">
-      <!-- Se renderiza vía JS -->
+      <!-- Se renderiza mediante JavaScript -->
     </div>
   </section>
 
@@ -197,23 +321,348 @@
       <span>🏠</span>Inicio
     </button>
     <button onclick="cambiarTab('registro')" class="nav-btn" id="btn-registro">
-      <span>🍔</span>Dosis
+      <span>📝</span>Registro
     </button>
     <button onclick="cambiarTab('calculadora')" class="nav-btn" id="btn-calculadora">
-      <span>🧮</span>Calculadora
+      <span>🧮</span>Calcu
     </button>
     <button onclick="cambiarTab('recomendaciones')" class="nav-btn" id="btn-recomendaciones">
-      <span>💡</span>Análisis
+      <span>💡</span>Recs
     </button>
     <button onclick="cambiarTab('biblioteca')" class="nav-btn" id="btn-biblioteca">
-      <span>📋</span>Biblioteca
+      <span>📚</span>Biblioteca
     </button>
   </nav>
   
 </div>
 
-<!-- Conexión con el archivo JavaScript separado -->
-<script src="script.js"></script>
-  <script src="script.js"></script>
+<!-- ========================================== -->
+<!-- LÓGICA JAVASCRIPT (Todo integrado aquí) -->
+<!-- ========================================== -->
+<script>
+  if (!localStorage.getItem("db_alimentos")) localStorage.setItem("db_alimentos", JSON.stringify([]));
+  if (!localStorage.getItem("db_registros")) localStorage.setItem("db_registros", JSON.stringify([]));
+
+  let platoConstruido = [];
+
+  document.addEventListener("DOMContentLoaded", () => {
+    actualizarApp();
+  });
+
+  function actualizarApp() {
+    renderizarBiblioteca();
+    poblarTodosLosSelectores();
+    actualizarPanelInicio();
+  }
+
+  function cambiarTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(`tab-${tabId}`).classList.add('active');
+    document.getElementById(`btn-${tabId}`).classList.add('active');
+  }
+
+  function guardarAlimento() {
+    const nombre = document.getElementById("bib-nombre").value.trim();
+    const categoria = document.getElementById("bib-categoria").value.trim() || "General";
+    const carbos = parseFloat(document.getElementById("bib-carbos").value) || 0;
+    const absorcion = document.getElementById("bib-absorcion").value;
+    const notes = document.getElementById("bib-notas").value.trim();
+
+    if (!nombre) return alert("El nombre es obligatorio.");
+
+    const nuevo = { id: Date.now().toString(), nombre, categoria, carbosHabituales: carbos, absorcion, notas: notes };
+    let alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
+    alimentos.push(nuevo);
+    localStorage.setItem("db_alimentos", JSON.stringify(alimentos));
+
+    document.getElementById("bib-nombre").value = "";
+    document.getElementById("bib-carbos").value = "";
+    document.getElementById("bib-notas").value = "";
+    document.querySelector("details").removeAttribute("open");
+    
+    actualizarApp();
+  }
+
+  function obtenerEstadisticasAlimento(alimentoId) {
+    const registros = JSON.parse(localStorage.getItem("db_registros")) || [];
+    const filtrados = registros.filter(r => r.alimentoId === alimentoId);
+    if(filtrados.length === 0) return null;
+
+    let sumaPre = 0, sumaInsulina = 0, cBoloNormal = 0, cBoloDual = 0;
+    let sumaG1 = 0, sumaG2 = 0, sumaG3 = 0, sumaG4 = 0, c1=0, c2=0, c3=0, c4=0;
+
+    filtrados.forEach(r => {
+      sumaPre += parseFloat(r.glucemiaPre || 0);
+      sumaInsulina += parseFloat(r.insulinaInyectada || 0);
+      if(r.tipoBolo === "Dual") cBoloDual++; else cBoloNormal++;
+      if(r.g1) { sumaG1 += parseFloat(r.g1); c1++; }
+      if(r.g2) { sumaG2 += parseFloat(r.g2); c2++; }
+      if(r.g3) { sumaG3 += parseFloat(r.g3); c3++; }
+      if(r.g4) { sumaG4 += parseFloat(r.g4); c4++; }
+    });
+
+    return {
+      veces: filtrados.length,
+      glucemiaPreMedia: Math.round(sumaPre / filtrados.length),
+      insulinaMedia: (sumaInsulina / filtrados.length).toFixed(1),
+      boloComun: cBoloDual >= cBoloNormal ? "Dual" : "Normal",
+      g1m: c1 ? Math.round(sumaG1/c1) : '--', g2m: c2 ? Math.round(sumaG2/c2) : '--',
+      g3m: c3 ? Math.round(sumaG3/c3) : '--', g4m: c4 ? Math.round(sumaG4/c4) : '--'
+    };
+  }
+
+  function renderizarBiblioteca() {
+    const alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
+    const filtro = document.getElementById("buscador-bib").value.toLowerCase();
+    const contenedor = document.getElementById("lista-alimentos");
+    contenedor.innerHTML = "";
+
+    alimentos.filter(a => a.nombre.toLowerCase().includes(filtro)).forEach(alimento => {
+      const stats = obtenerEstadisticasAlimento(alimento.id);
+      const div = document.createElement("div");
+      div.className = "alimento-item";
+      div.innerHTML = `
+        <div class="alimento-header"><strong>${alimento.nombre}</strong><span class="badge">${alimento.categoria}</span></div>
+        <div style="margin-top: 5px;">
+          <span class="badge absorcion">⏳ Abs. ${alimento.absorcion}</span>
+          <span class="badge" style="background:#fff3cd; color:#664d03;">🍞 ${alimento.carbosHabituales} Raciones</span>
+        </div>
+        ${alimento.notas ? `<p style="font-size:13px; margin:6px 0; color:#555; font-style:italic;">📌 ${alimento.notas}</p>` : ''}
+        <div class="stats-grid" style="border-top:1px dashed #eee; margin-top:8px; padding-top:8px;">
+          <div>🔄 Consumido: ${stats ? stats.veces : 0} vec</div>
+          <div>🩸 Pre Media: ${stats ? stats.glucemiaPreMedia : '--'}</div>
+          <div>💉 Bolo: ${stats ? stats.boloComun : '--'}</div>
+          <div>💉 Insulina M: ${stats ? stats.insulinaMedia+'U' : '--'}</div>
+          <div style="grid-column: span 2;">⏳ Glucemias Post (+1h a +4h): <b>${stats ? `${stats.g1m}|${stats.g2m}|${stats.g3m}|${stats.g4m}` : '--|--|--|--'}</b></div>
+        </div>
+      `;
+      contenedor.appendChild(div);
+    });
+  }
+
+  function poblarTodosLosSelectores() {
+    const alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
+    const selectores = ["reg-alimento-id", "calcu-alimento-id", "rec-alimento-id"];
+    
+    selectores.forEach(id => {
+      const select = document.getElementById(id);
+      if (!select) return;
+      const valorGuardado = select.value;
+      select.innerHTML = '<option value="">-- Selecciona --</option>';
+      alimentos.forEach(a => {
+        select.innerHTML += `<option value="${a.id}">${a.nombre}</option>`;
+      });
+      select.value = valorGuardado;
+    });
+  }
+
+  function actualizarPrevisualizacionHistorica() {
+    const id = document.getElementById("reg-alimento-id").value;
+    const panel = document.getElementById("previsualizacion-historica");
+    if(!id) { panel.style.display = "none"; return; }
+    
+    const stats = obtenerEstadisticasAlimento(id);
+    if(stats) {
+      panel.style.display = "grid";
+      panel.innerHTML = `<div>🔄 Veces: ${stats.veces}</div><div>🩸 Pre M: ${stats.glucemiaPreMedia}</div><div>💉 Insulina M: ${stats.insulinaMedia}U</div><div>⏱️ Hist: ${stats.g1m}|${stats.g2m}|${stats.g3m}|${stats.g4m}</div>`;
+    } else {
+      panel.style.display = "block"; panel.innerHTML = "✨ Primera vez que registras este alimento.";
+    }
+  }
+
+  function guardarRegistroComida() {
+    const alimentoId = document.getElementById("reg-alimento-id").value;
+    const glucemiaPre = document.getElementById("reg-glucemia-pre").value;
+    const raciones = document.getElementById("reg-raciones").value;
+    const insulinaInyectada = document.getElementById("reg-insulina-inyectada").value;
+    const tipoBolo = document.getElementById("reg-tipo-bolo").value;
+    
+    if(!alimentoId || !glucemiaPre || !raciones || !insulinaInyectada) return alert("Rellena los campos obligatorios.");
+
+    const nuevoRegistro = {
+      id: Date.now().toString(), alimentoId, fecha: new Date().toLocaleString(), timestamp: Date.now(),
+      glucemiaPre, insulinaActiva: document.getElementById("reg-insulina-activa").value,
+      deportePrevio: document.getElementById("reg-deporte-previo").value, raciones, insulinaInyectada, tipoBolo,
+      comentarios: document.getElementById("reg-comentarios").value, g1: null, g2: null, g3: null, g4: null
+    };
+
+    let registros = JSON.parse(localStorage.getItem("db_registros"));
+    registros.unshift(nuevoRegistro);
+    localStorage.setItem("db_registros", JSON.stringify(registros));
+
+    document.getElementById("reg-glucemia-pre").value = "";
+    document.getElementById("reg-raciones").value = "";
+    document.getElementById("reg-insulina-inyectada").value = "";
+    document.getElementById("reg-comentarios").value = "";
+    
+    alert("¡Comida registrada con éxito!");
+    cambiarTab('inicio');
+    actualizarApp();
+  }
+
+  function agregarALaCalculadora() {
+    const id = document.getElementById("calcu-alimento-id").value;
+    const mult = parseFloat(document.getElementById("calcu-multiplicador").value) || 1;
+    if(!id) return alert("Selecciona un ingrediente.");
+
+    const alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
+    const al = alimentos.find(a => a.id === id);
+
+    platoConstruido.push({ ...al, multiplicador: mult, hcCalculados: al.carbosHabituales * mult });
+    renderizarCalculadora();
+  }
+
+  function renderizarCalculadora() {
+    const lista = document.getElementById("calcu-lista-items");
+    if(platoConstruido.length === 0) {
+      lista.innerHTML = "<li>El plato está vacío</li>";
+      document.getElementById("calcu-total-hc").innerText = "0";
+      document.getElementById("calcu-absorcion-sugerida").innerText = "--";
+      return;
+    }
+
+    lista.innerHTML = "";
+    let totalHc = 0;
+    let tieneLenta = false;
+
+    platoConstruido.forEach((item, index) => {
+      totalHc += item.hcCalculados;
+      if(item.absorcion === "Lenta/Grasas") tieneLenta = true;
+      lista.innerHTML += `<li>${item.nombre} (x${item.multiplicador}) ➡️ ${(item.hcCalculados).toFixed(1)} raciones <button onclick="eliminarDeCalculadora(${index})" style="width:auto; padding:2px 6px; background:red; font-size:10px; margin-left:10px;">X</button></li>`;
+    });
+
+    document.getElementById("calcu-total-hc").innerText = totalHc.toFixed(1);
+    document.getElementById("calcu-absorcion-sugerida").innerText = tieneLenta ? "Lenta (Sugerido Bolo Dual)" : "Media/Rápida (Bolo Normal)";
+  }
+
+  function eliminarDeCalculadora(index) {
+    platoConstruido.splice(index, 1);
+    renderizarCalculadora();
+  }
+
+  function volcarCalculadoraARegistro() {
+    if(platoConstruido.length === 0) return alert("Tu plato está vacío.");
+    const totalHc = document.getElementById("calcu-total-hc").innerText;
+    
+    cambiarTab('registro');
+    document.getElementById("reg-alimento-id").value = ""; 
+    document.getElementById("reg-raciones").value = totalHc;
+    actualizarPrevisualizacionHistorica();
+  }
+
+  function guardarComboComoPlatoHabitual() {
+    if(platoConstruido.length === 0) return alert("Agrega cosas al plato primero.");
+    const nombreCombo = prompt("Introduce un nombre para este plato combinado:");
+    if(!nombreCombo) return;
+
+    const totalHc = parseFloat(document.getElementById("calcu-total-hc").innerText);
+    const tieneLenta = document.getElementById("calcu-absorcion-sugerida").innerText.includes("Lenta");
+
+    const nuevoPlato = {
+      id: Date.now().toString(), nombre: nombreCombo, categoria: "Plato Combinado",
+      carbosHabituales: totalHc, absorcion: tieneLenta ? "Lenta/Grasas" : "Media", notas: "Creado desde la calculadora."
+    };
+
+    let alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
+    alimentos.push(nuevoPlato);
+    localStorage.setItem("db_alimentos", JSON.stringify(alimentos));
+    
+    alert("¡Combo guardado en tu biblioteca como plato frecuente!");
+    platoConstruido = [];
+    renderizarCalculadora();
+    actualizarApp();
+  }
+
+  function generarRecomendacionInteligente() {
+    const id = document.getElementById("rec-alimento-id").value;
+    const contenedor = document.getElementById("rec-resultado");
+    if(!id) { contenedor.innerHTML = "<p>Selecciona un alimento para analizar.</p>"; return; }
+
+    const registros = JSON.parse(localStorage.getItem("db_registros")) || [];
+    const filtrados = registros.filter(r => r.alimentoId === id);
+
+    if(filtrados.length === 0) {
+      contenedor.innerHTML = "<div class='card'>💡 <b>Sin histórico:</b> Aún no hay datos de inyecciones para este alimento. Registra comidas para activar la inteligencia.</div>";
+      return;
+    }
+
+    let mejorRegistro = null;
+    let puntuacionMinima = 999;
+
+    filtrados.forEach(r => {
+      if(r.g2 && r.g4) {
+        let desvio = Math.abs(r.g2 - 120) + Math.abs(r.g4 - 110);
+        if(desvio < puntuacionMinima) { puntuacionMinima = desvio; mejorRegistro = r; }
+      }
+    });
+
+    if(mejorRegistro) {
+      contenedor.innerHTML = `
+        <div class="card" style="background:#e3f2fd; border-left:4px solid #007aff;">
+          <h4>💡 Patrón de Éxito Encontrado</h4>
+          <p>Has consumido este alimento <b>${filtrados.length} veces</b>. Tu respuesta glucémica más estable fue con la siguiente pauta:</p>
+          <ul>
+            <li><b>Raciones reales:</b> ${mejorRegistro.raciones} HC</li>
+            <li><b>Dosis aplicada:</b> ${mejorRegistro.insulinaInyectada} Unidades</li>
+            <li><b>Estrategia de bolo:</b> Bolo ${mejorRegistro.tipoBolo}</li>
+            <li><b>Glucemia previa:</b> ${mejorRegistro.glucemiaPre} mg/dL</li>
+          </ul>
+          <p style="font-size:12px; color:#555; font-style:italic;">Resultados de ese día: +1h: ${mejorRegistro.g1 || '--'} | +2h: ${mejorRegistro.g2} | +3h: ${mejorRegistro.g3 || '--'} | +4h: ${mejorRegistro.g4} mg/dL.</p>
+        </div>
+      `;
+    } else {
+      contenedor.innerHTML = `<div class='card'>💡 El alimento se ha registrado <b>${filtrados.length} veces</b>, pero necesitas completar las glucemias de <b>+2h y +4h</b> en el Inicio para que el algoritmo pueda darte la pauta óptima exacta.</div>`;
+    }
+  }
+
+  function actualizarPanelInicio() {
+    const registros = JSON.parse(localStorage.getItem("db_registros")) || [];
+    const alimentos = JSON.parse(localStorage.getItem("db_alimentos")) || [];
+    
+    const ultCard = document.getElementById("inicio-ultimo");
+    if(registros.length > 0) {
+      const ult = registros[0]; const al = alimentos.find(a => a.id === ult.alimentoId);
+      ultCard.innerHTML = `<b>${ult.fecha}</b><br>🍔 ${al ? al.nombre : 'Plato combinado'} (${ult.raciones} raciones)<br>🩸 Previa: ${ult.glucemiaPre} mg/dL | 💉 ${ult.insulinaInyectada}U (${ult.tipoBolo})`;
+    } else {
+      ultCard.innerHTML = "Aún no has registrado ninguna comida.";
+    }
+
+    const pendCard = document.getElementById("inicio-pendientes");
+    const pendientes = registros.filter(r => (Date.now() - r.timestamp < 5 * 60 * 60 * 1000) && (!r.g1 || !r.g2 || !r.g3 || !r.g4));
+
+    if(pendientes.length > 0) {
+      pendCard.innerHTML = "";
+      pendientes.forEach(p => {
+        const al = alimentos.find(a => a.id === p.alimentoId);
+        const div = document.createElement("div");
+        div.className = "card"; div.style = "background:#fff; border:1px solid #ff9500; margin-top:8px; font-size:14px; padding:10px;";
+        div.innerHTML = `
+          <strong>${al ? al.nombre : 'Plato Combinado'}</strong><br><span style="font-size:11px; color:#666;">${p.fecha}</span>
+          <div style="margin-top:8px; display:grid; grid-template-columns: repeat(4, 1fr); gap:4px;">
+            <div>+1h: <input type="number" id="g1-${p.id}" value="${p.g1||''}" style="padding:4px; font-size:12px;" onchange="actualizarHoraPost('${p.id}', 1)"></div>
+            <div>+2h: <input type="number" id="g2-${p.id}" value="${p.g2||''}" style="padding:4px; font-size:12px;" onchange="actualizarHoraPost('${p.id}', 2)"></div>
+            <div>+3h: <input type="number" id="g3-${p.id}" value="${p.g3||''}" style="padding:4px; font-size:12px;" onchange="actualizarHoraPost('${p.id}', 3)"></div>
+            <div>+4h: <input type="number" id="g4-${p.id}" value="${p.g4||''}" style="padding:4px; font-size:12px;" onchange="actualizarHoraPost('${p.id}', 4)"></div>
+          </div>
+        `;
+        pendCard.appendChild(div);
+      });
+    } else {
+      pendCard.innerHTML = "No tienes mediciones postprandiales pendientes de las últimas 5 horas.";
+    }
+  }
+
+  function actualizarHoraPost(registroId, horaNum) {
+    let registros = JSON.parse(localStorage.getItem("db_registros"));
+    const index = registros.findIndex(r => r.id === registroId);
+    if(index !== -1) {
+      const valor = document.getElementById(`g${horaNum}-${registroId}`).value;
+      registros[index][`g${horaNum}`] = valor ? parseFloat(valor) : null;
+      localStorage.setItem("db_registros", JSON.stringify(registros));
+      actualizarApp();
+    }
+  }
+</script>
 </body>
 </html>
