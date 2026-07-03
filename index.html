@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Control de Diabetes - Comida y Dosis</title>
+    <title>Gestor Diabetes Pro</title>
     <style>
         :root {
             --bg-color: #f6f8fa;
@@ -26,12 +26,20 @@
             background-color: var(--bg-color); 
             color: var(--text-color); 
             padding: 15px; 
-            padding-bottom: 40px; 
+            padding-bottom: 85px; /* Espacio para que el menú inferior no tape nada */
         }
 
         .container { 
             max-width: 480px; 
             margin: 0 auto; 
+        }
+
+        /* PESTAÑAS (Se muestran/ocultan con el menú) */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
         }
 
         .card { 
@@ -87,7 +95,7 @@
             background: #fff; 
         }
 
-        /* Bloque de configuración del reparto (Bolo Dual) */
+        /* Bloque Dual */
         .config-reparto {
             border: 1.5px dashed #5cb85c;
             border-radius: 12px;
@@ -101,9 +109,6 @@
             font-weight: bold;
             color: #5cb85c;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
 
         .inputs-inline { 
@@ -111,17 +116,13 @@
             grid-template-columns: 1fr 1fr; 
             gap: 10px; 
         }
-        
-        .inputs-inline div {
-            margin-bottom: 0;
-        }
 
         .inputs-inline input {
             margin-bottom: 8px;
             background: #fff;
         }
 
-        /* SECCIÓN NUEVA: Controles Posteriores de 1h a 4h */
+        /* Monitoreo 1h a 4h */
         .seccion-monitoreo {
             margin-top: 5px;
             margin-bottom: 20px;
@@ -134,9 +135,6 @@
             font-weight: bold;
             color: #2d3748;
             margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
 
         .grid-horas {
@@ -168,11 +166,7 @@
             background: #fff;
         }
 
-        .hora-box input:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Botón Confirmar */
+        /* Botones */
         .btn-confirmar { 
             width: 100%; 
             padding: 14px; 
@@ -183,12 +177,6 @@
             cursor: pointer; 
             background-color: var(--primary-green);
             color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: background 0.2s;
-        }
-
-        .btn-confirmar:active { 
-            background-color: var(--primary-green-hover); 
         }
 
         .btn-danger {
@@ -196,31 +184,21 @@
             padding: 10px;
             border: none;
             border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
             background-color: #ff3b30;
             color: white;
+            font-weight: bold;
             cursor: pointer;
             margin-top: 15px;
         }
 
-        /* Estilos Historial */
-        .historial-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #1c1c1e;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
+        /* Historial y píldoras */
         .registro-card {
             border-left: 4px solid var(--primary-green);
             padding: 12px;
             background: #fcfdfc;
             border-radius: 8px;
-            border-top: 1px solid var(--border-color);
-            border-right: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-green);
             margin-bottom: 12px;
         }
 
@@ -232,13 +210,6 @@
             margin-bottom: 6px;
         }
 
-        .registro-detalles {
-            font-size: 13px;
-            color: #4a5568;
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
         .pildoras-horas {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -246,6 +217,7 @@
             background: #f1f5f9;
             padding: 8px;
             border-radius: 8px;
+            margin-top: 8px;
         }
 
         .pildora {
@@ -255,107 +227,224 @@
             border-radius: 4px;
             border: 1px solid #e2e8f0;
         }
+
+        /* MENÚ INFERIOR ESTILO IPHONE */
+        .navbar-inferior {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 999;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8e8e93;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 33%;
+            height: 100%;
+            justify-content: center;
+        }
+
+        .nav-item.active {
+            color: var(--primary-green);
+        }
+
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 3px;
+        }
+
+        /* Estilos Calculadora */
+        .calc-resultado {
+            background: #eef9ee;
+            border: 1px solid #c2eec2;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2b752b;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
 
-    <div class="card">
-        <div class="card-title">🍔 COMIDA Y DOSIS</div>
-        
-        <label>Tipo de absorción detectado:</label>
-        <input type="text" id="tipoAbsorcion" value="Rápida" placeholder="Ej: Rápida, Lenta...">
-
-        <label>Raciones de HC reales:</label>
-        <input type="number" id="racionesHC" value="6" placeholder="Ej: 6">
-
-        <label>Insulina Total Inyectada (U):</label>
-        <input type="number" id="insulinaTotal" step="0.5" placeholder="Introduce unidades">
-
-        <label>Tipo de Bolo / Reparto:</label>
-        <select id="tipoBolo" onchange="alternarBloqueReparto()">
-            <option value="Bolo Dual (Dividir dosis)">Bolo Dual (Dividir dosis)</option>
-            <option value="Bolo Normal">Bolo Normal</option>
-        </select>
-
-        <div class="config-reparto" id="bloqueReparto">
-            <div class="reparto-title">⚙️ Configuración del Reparto de Dosis:</div>
-            <div class="inputs-inline">
-                <div>
-                    <label style="font-size: 12px;">% Inmediato:</label>
-                    <input type="number" id="pctInmediato" placeholder="Ej: 60">
-                </div>
-                <div>
-                    <label style="font-size: 12px;">% Retardado:</label>
-                    <input type="number" id="pctRetardado" placeholder="Ej: 40">
-                </div>
+    <!-- PESTAÑA 1: CALCULADORA -->
+    <div id="tab-calculadora" class="tab-content">
+        <div class="card">
+            <div class="card-title">🧮 Calculadora de Raciones</div>
+            <label>Gramos de alimento:</label>
+            <input type="number" id="calcGramos" placeholder="Ej: 150" oninput="calcularRaciones()">
+            
+            <label>HC por cada 100g de alimento:</label>
+            <input type="number" id="calcHc100" placeholder="Ej: 70" oninput="calcularRaciones()">
+            
+            <div class="calc-resultado">
+                Raciones Resultantes: <span id="resultadoRaciones">0.0</span> HC
             </div>
-            <label style="font-size: 12px; margin-top: 4px;">Duración de la extensión (Horas):</label>
-            <input type="number" id="duracionExtension" placeholder="Ej: 3" style="margin-bottom:0; background:#fff;">
+            <button class="btn-confirmar" style="margin-top:15px; background-color: var(--accent-blue);" onclick="copiarRacionesAFormulario()">
+                👉 Usar raciones en mi dosis
+            </button>
         </div>
-
-        <div class="seccion-monitoreo">
-            <div class="monitoreo-title">⏱️ Monitoreo Posterior (1h a 4h)</div>
-            <div class="grid-horas">
-                
-                <div class="hora-box">
-                    <span class="hora-label">A la 1 Hora</span>
-                    <input type="number" id="g1" placeholder="Glucemia">
-                    <input type="number" id="i1" step="0.5" placeholder="Insulina U">
-                </div>
-
-                <div class="hora-box">
-                    <span class="hora-label">A las 2 Horas</span>
-                    <input type="number" id="g2" placeholder="Glucemia">
-                    <input type="number" id="i2" step="0.5" placeholder="Insulina U">
-                </div>
-
-                <div class="hora-box">
-                    <span class="hora-label">A las 3 Horas</span>
-                    <input type="number" id="g3" placeholder="Glucemia">
-                    <input type="number" id="i3" step="0.5" placeholder="Insulina U">
-                </div>
-
-                <div class="hora-box">
-                    <span class="hora-label">A las 4 Horas</span>
-                    <input type="number" id="g4" placeholder="Glucemia">
-                    <input type="number" id="i4" step="0.5" placeholder="Insulina U">
-                </div>
-
-            </div>
-        </div>
-
-        <button class="btn-confirmar" onclick="guardarRegistro()">Confirmar e Inyectar 💉</button>
     </div>
 
-    <div class="card">
-        <div class="historial-title">📋 Historial de Inyecciones</div>
-        <div id="historial"></div>
-        <button class="btn-danger" onclick="borrarTodo()">Borrar Todo el Historial</button>
+
+    <!-- PESTAÑA 2: COMIDA Y DOSIS (TU PANTALLA PRINCIPAL) -->
+    <div id="tab-dosis" class="tab-content active">
+        <div class="card">
+            <div class="card-title">🍔 COMIDA Y DOSIS</div>
+            
+            <label>Tipo de absorción detectado:</label>
+            <input type="text" id="tipoAbsorcion" value="Rápida" placeholder="Ej: Rápida, Lenta...">
+
+            <label>Raciones de HC reales:</label>
+            <input type="number" id="racionesHC" value="6" placeholder="Ej: 6">
+
+            <label>Insulina Total Inyectada (U):</label>
+            <input type="number" id="insulinaTotal" step="0.5" placeholder="Introduce unidades">
+
+            <label>Tipo de Bolo / Reparto:</label>
+            <select id="tipoBolo" onchange="alternarBloqueReparto()">
+                <option value="Bolo Dual (Dividir dosis)">Bolo Dual (Dividir dosis)</option>
+                <option value="Bolo Normal">Bolo Normal</option>
+            </select>
+
+            <!-- Configuración del Reparto -->
+            <div class="config-reparto" id="bloqueReparto">
+                <div class="reparto-title">⚙️ Configuración del Reparto de Dosis:</div>
+                <div class="inputs-inline">
+                    <div>
+                        <label style="font-size: 12px;">% Inmediato:</label>
+                        <input type="number" id="pctInmediato" placeholder="Ej: 60">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px;">% Retardado:</label>
+                        <input type="number" id="pctRetardado" placeholder="Ej: 40">
+                    </div>
+                </div>
+                <label style="font-size: 12px; margin-top: 4px;">Duración de la extensión (Horas):</label>
+                <input type="number" id="duracionExtension" placeholder="Ej: 3" style="margin-bottom:0; background:#fff;">
+            </div>
+
+            <!-- MONITOREO ANTES DEL BOTÓN -->
+            <div class="seccion-monitoreo">
+                <div class="monitoreo-title">⏱️ Monitoreo Posterior (1h a 4h)</div>
+                <div class="grid-horas">
+                    <div class="hora-box">
+                        <span class="hora-label">A la 1 Hora</span>
+                        <input type="number" id="g1" placeholder="Glucemia">
+                        <input type="number" id="i1" step="0.5" placeholder="Insulina U">
+                    </div>
+                    <div class="hora-box">
+                        <span class="hora-label">A las 2 Horas</span>
+                        <input type="number" id="g2" placeholder="Glucemia">
+                        <input type="number" id="i2" step="0.5" placeholder="Insulina U">
+                    </div>
+                    <div class="hora-box">
+                        <span class="hora-label">A las 3 Horas</span>
+                        <input type="number" id="g3" placeholder="Glucemia">
+                        <input type="number" id="i3" step="0.5" placeholder="Insulina U">
+                    </div>
+                    <div class="hora-box">
+                        <span class="hora-label">A las 4 Horas</span>
+                        <input type="number" id="g4" placeholder="Glucemia">
+                        <input type="number" id="i4" step="0.5" placeholder="Insulina U">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-confirmar" onclick="guardarRegistro()">Confirmar e Inyectar 💉</button>
+        </div>
+    </div>
+
+
+    <!-- PESTAÑA 3: HISTORIAL -->
+    <div id="tab-historial" class="tab-content">
+        <div class="card">
+            <div class="historial-title">📋 Historial de Inyecciones</div>
+            <div id="historial"></div>
+            <button class="btn-danger" onclick="borrarTodo()">Borrar Todo el Historial</button>
+        </div>
     </div>
 
 </div>
 
+<!-- MENÚ INFERIOR FIJO -->
+<div class="navbar-inferior">
+    <button class="nav-item" id="btn-tab-calculadora" onclick="cambiarPestana('calculadora')">
+        <span class="nav-icon">🧮</span>
+        <span>Calculadora</span>
+    </button>
+    <button class="nav-item active" id="btn-tab-dosis" onclick="cambiarPestana('dosis')">
+        <span class="nav-icon">🍔</span>
+        <span>Dosis</span>
+    </button>
+    <button class="nav-item" id="btn-tab-historial" onclick="cambiarPestana('historial')">
+        <span class="nav-icon">📋</span>
+        <span>Historial</span>
+    </button>
+</div>
+
 <script>
-    // Mostrar u ocultar la caja verde de reparto dinámicamente
-    function alternarBloqueReparto() {
-        const tipoBolo = document.getElementById('tipoBolo').value;
-        const bloque = document.getElementById('bloqueReparto');
-        if (tipoBolo === "Bolo Normal") {
-            bloque.style.display = 'none';
-        } else {
-            bloque.style.display = 'block';
+    // Lógica para cambiar de pestaña en el menú inferior
+    function cambiarPestana(idPestana) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
+        document.getElementById(`tab-${idPestana}`).classList.add('active');
+        document.getElementById(`btn-tab-${idPestana}`).classList.add('active');
+
+        if(idPestana === 'historial') {
+            cargarHistorial();
         }
     }
 
+    // Lógica de la calculadora
+    function calcularRaciones() {
+        const gramos = parseFloat(document.getElementById('calcGramos').value) || 0;
+        const hc100 = parseFloat(document.getElementById('calcHc100').value) || 0;
+        const raciones = (gramos * hc100) / 1000;
+        document.getElementById('resultadoRaciones').innerText = raciones.toFixed(1);
+    }
+
+    function copiarRacionesAFormulario() {
+        const raciones = document.getElementById('resultadoRaciones').innerText;
+        document.getElementById('racionesHC').value = raciones;
+        cambiarPestana('dosis');
+    }
+
+    // Mostrar/Ocultar bloque reparto
+    function alternarBloqueReparto() {
+        const tipoBolo = document.getElementById('tipoBolo').value;
+        const bloque = document.getElementById('bloqueReparto');
+        bloque.style.display = (tipoBolo === "Bolo Normal") ? 'none' : 'block';
+    }
+
+    // Guardar registros completos
     function guardarRegistro() {
         const tipoAbsorcion = document.getElementById('tipoAbsorcion').value;
         const racionesHC = document.getElementById('racionesHC').value;
         const insulinaTotal = document.getElementById('insulinaTotal').value;
         const tipoBolo = document.getElementById('tipoBolo').value;
 
-        // Datos del reparto dual (si aplica)
         const pctInmediato = document.getElementById('pctInmediato').value || '-';
         const pctRetardado = document.getElementById('pctRetardado').value || '-';
         const duracionExtension = document.getElementById('duracionExtension').value || '-';
@@ -365,7 +454,6 @@
             return; 
         }
 
-        // Crear la estructura del nuevo registro incorporando los datos de las 4 horas recogidos del formulario
         const nuevoRegistro = {
             id: Date.now(),
             fecha: new Date().toLocaleString('es-ES', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }),
@@ -382,29 +470,28 @@
             }
         };
 
-        // Guardar de manera persistente en localStorage
-        let registros = JSON.parse(localStorage.getItem('diabetes_data_v2')) || [];
+        let registros = JSON.parse(localStorage.getItem('diabetes_data_final')) || [];
         registros.unshift(nuevoRegistro);
-        localStorage.setItem('diabetes_data_v2', JSON.stringify(registros));
+        localStorage.setItem('diabetes_data_final', JSON.stringify(registros));
 
-        // Resetear exclusivamente los campos variables del formulario tras registrar
+        // Limpiar campos variables
         document.getElementById('insulinaTotal').value = '';
         document.getElementById('pctInmediato').value = '';
         document.getElementById('pctRetardado').value = '';
         document.getElementById('duracionExtension').value = '';
-        
         for(let i=1; i<=4; i++) {
             document.getElementById(`g${i}`).value = '';
             document.getElementById(`i${i}`).value = '';
         }
 
-        cargarHistorial();
+        alert('¡Registro guardado con éxito!');
+        cambiarPestana('historial');
     }
 
     function cargarHistorial() {
         const historialDiv = document.getElementById('historial');
         historialDiv.innerHTML = '';
-        const registros = JSON.parse(localStorage.getItem('diabetes_data_v2')) || [];
+        const registros = JSON.parse(localStorage.getItem('diabetes_data_final')) || [];
 
         if(registros.length === 0) {
             historialDiv.innerHTML = '<p style="text-align:center; color:#8e8e93; font-size:14px;">No hay registros guardados.</p>';
@@ -419,7 +506,7 @@
                     <span>Absorción: ${r.tipoAbsorcion}</span>
                     <span style="font-size:12px; color:#718096;">${r.fecha}</span>
                 </div>
-                <div class="registro-detalles">
+                <div style="font-size:13px; color:#4a5568; margin-bottom:8px; line-height:1.4;">
                     • <strong>HC:</strong> ${r.racionesHC} raciones<br>
                     • <strong>Insulina Total:</strong> ${r.insulinaTotal} U<br>
                     • <strong>Bolo:</strong> ${r.tipoBolo}<br>
@@ -438,18 +525,15 @@
 
     function borrarTodo() {
         if(confirm('¿Seguro que quieres eliminar todo el historial de inyecciones?')) {
-            localStorage.removeItem('diabetes_data_v2');
+            localStorage.removeItem('diabetes_data_final');
             cargarHistorial();
         }
     }
 
-    // Al arrancar la pantalla por primera vez
     window.onload = function() {
         alternarBloqueReparto();
-        cargarHistorial();
     }
 </script>
 
 </body>
 </html>
-
