@@ -74,6 +74,7 @@
       margin-bottom: 16px; 
       box-shadow: 0 4px 12px rgba(0,0,0,0.03);
       border: 1px solid var(--border-color);
+      position: relative;
     }
 
     .alert-card { 
@@ -114,7 +115,7 @@
       color: white; 
       border: none; 
       padding: 14px; 
-      border-radius: 25px; /* Redondeado elegante como el botón Inyectar de la foto */
+      border-radius: 25px; 
       font-size: 16px; 
       font-weight: 600; 
       cursor: pointer;
@@ -127,7 +128,6 @@
       transform: scale(0.98); 
     }
 
-    /* BARRA DE NAVEGACIÓN INFERIOR ESTILO IOS */
     .bottom-nav {
       position: fixed; 
       bottom: 0; 
@@ -187,9 +187,10 @@
       margin-bottom: 12px; 
       border: 1px solid var(--border-color); 
       box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      position: relative;
     }
 
-    .alimento-header { display: flex; justify-content: space-between; align-items: center; }
+    .alimento-header { display: flex; justify-content: space-between; align-items: center; padding-right: 55px; }
     .badge { background: #f2f2f7; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #555; }
     .badge.absorcion { background: var(--primary-light); color: var(--primary); }
 
@@ -202,7 +203,6 @@
       color: #48484a; 
     }
 
-    /* Cuadrícula de registros pendientes con insulina */
     .grid-pendientes {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -223,12 +223,34 @@
       text-align: center;
       margin-top: 4px;
       border-radius: 6px;
+      width: 100%;
     }
     
     .obligatorio {
       color: #ff3b30;
       font-weight: bold;
       margin-left: 2px;
+    }
+
+    /* Botones de acción rápido superiores */
+    .acciones-alimento {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      display: flex;
+      gap: 8px;
+    }
+    .btn-accion {
+      background: none;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 4px;
+      box-shadow: none;
+      width: auto;
+    }
+    .btn-accion:active {
+      transform: scale(0.9);
     }
   </style>
 </head>
@@ -256,8 +278,7 @@
     <div class="card">
       <div class="form-group">
         <label>1. Selecciona el alimento/plato:<span class="obligatorio">*</span></label>
-        <select id="reg-alimento-id" onchange="actualizarPrevisualizacionHistorica()">
-          </select>
+        <select id="reg-alimento-id" onchange="actualizarPrevisualizacionHistorica()"></select>
       </div>
 
       <div id="previsualizacion-historica" class="stats-grid card" style="display:none; background:#f8f9fa; margin-bottom:14px; padding:12px; border: 1px solid #e5e5ea;"></div>
@@ -315,9 +336,10 @@
   <section id="tab-biblioteca" class="tab-content">
     <h2>Biblioteca 📚</h2>
     
-    <details class="card" style="margin-bottom:15px; border-color: var(--primary);">
-      <summary style="font-weight:bold; cursor:pointer; color:var(--primary);">▶ ➕ Añadir nuevo elemento</summary>
+    <details class="card" id="form-alimento-container" style="margin-bottom:15px; border-color: var(--primary);">
+      <summary style="font-weight:bold; cursor:pointer; color:var(--primary);" id="label-anadir-alimento">▶ ➕ Añadir nuevo elemento</summary>
       <div style="margin-top:15px;">
+        <input type="hidden" id="bib-id-editar" value="">
         <div class="form-group">
           <label>Nombre del alimento:</label>
           <input type="text" id="bib-nombre" placeholder="Ej: Arroz integral">
@@ -342,7 +364,8 @@
           <label>Notas adicionales:</label>
           <input type="text" id="bib-notas" placeholder="Opcional">
         </div>
-        <button onclick="guardarAlimento()">Guardar en la Biblioteca</button>
+        <button onclick="guardarAlimento()" id="btn-guardar-alimento">Guardar en la Biblioteca</button>
+        <button onclick="cancelarEdicion()" id="btn-cancelar-edicion" style="background:#8e8e93; margin-top:8px; display:none;">Cancelar Edición</button>
       </div>
     </details>
 
@@ -350,16 +373,14 @@
       <input type="text" id="buscador-bib" placeholder="🔍 Buscar alimento..." oninput="renderizarBiblioteca()">
     </div>
 
-    <div id="lista-alimentos">
-      </div>
+    <div id="lista-alimentos"></div>
   </section>
 
   <section id="tab-calculadora" class="tab-content">
     <h2>Calculadora 🧮</h2>
     <div class="card">
       <label>Añadir alimento al plato:</label>
-      <select id="calcu-alimento-id">
-        </select>
+      <select id="calcu-alimento-id"></select>
       <div class="form-group" style="margin-top:10px;">
         <label>Multiplicador de raciones:</label>
         <input type="number" id="calcu-multiplicador" value="1" step="0.1">
@@ -387,8 +408,7 @@
     <h2>Recomendaciones 💡</h2>
     <div class="card">
       <label>Selecciona un alimento para analizar tu histórico:</label>
-      <select id="rec-alimento-id" onchange="generarRecomendacionInteligente()">
-        </select>
+      <select id="rec-alimento-id" onchange="generarRecomendacionInteligente()"></select>
     </div>
     <div id="rec-resultado">
       <p style="text-align:center; color:var(--text-muted);">Selecciona un alimento de la lista para activar el módulo inteligente.</p>
@@ -439,6 +459,7 @@
   }
 
   function guardarAlimento() {
+    const idEditar = document.getElementById("bib-id-editar").value;
     const nombre = document.getElementById("bib-nombre").value.trim();
     const categoria = document.getElementById("bib-categoria").value.trim() || "General";
     const carbos = parseFloat(document.getElementById("bib-carbos").value) || 0;
@@ -447,16 +468,70 @@
 
     if (!nombre) return alert("El nombre es obligatorio.");
 
-    const nuevo = { id: Date.now().toString(), nombre, categoria, carbosHabituales: carbos, absorcion, notas: notes };
     let alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
-    alimentos.push(nuevo);
-    localStorage.setItem("db_alimentos", JSON.stringify(alimentos));
 
+    if (idEditar) {
+      // Modo Edición
+      const index = alimentos.findIndex(a => a.id === idEditar);
+      if (index !== -1) {
+        alimentos[index] = { ...alimentos[index], nombre, categoria, carbosHabituales: carbos, absorcion, notas: notes };
+      }
+      cancelarEdicion();
+    } else {
+      // Modo Nuevo Registro
+      const nuevo = { id: Date.now().toString(), nombre, categoria, carbosHabituales: carbos, absorcion, notas: notes };
+      alimentos.push(nuevo);
+    }
+
+    localStorage.setItem("db_alimentos", JSON.stringify(alimentos));
+    
     document.getElementById("bib-nombre").value = "";
     document.getElementById("bib-carbos").value = "";
     document.getElementById("bib-notas").value = "";
-    document.querySelector("details").removeAttribute("open");
+    document.getElementById("form-alimento-container").removeAttribute("open");
     
+    actualizarApp();
+  }
+
+  function editarAlimento(id) {
+    const alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
+    const al = alimentos.find(a => a.id === id);
+    if (!al) return;
+
+    document.getElementById("bib-id-editar").value = al.id;
+    document.getElementById("bib-nombre").value = al.nombre;
+    document.getElementById("bib-categoria").value = al.categoria;
+    document.getElementById("bib-carbos").value = al.carbosHabituales;
+    document.getElementById("bib-absorcion").value = al.absorcion;
+    document.getElementById("bib-notas").value = al.notas || "";
+
+    document.getElementById("label-anadir-alimento").innerText = "▶ ✏️ Editando Alimento";
+    document.getElementById("btn-guardar-alimento").innerText = "Actualizar Alimento";
+    document.getElementById("btn-cancelar-edicion").style.display = "block";
+
+    document.getElementById("form-alimento-container").setAttribute("open", "true");
+    document.getElementById("form-alimento-container").scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function cancelarEdicion() {
+    document.getElementById("bib-id-editar").value = "";
+    document.getElementById("bib-nombre").value = "";
+    document.getElementById("bib-carbos").value = "";
+    document.getElementById("bib-notas").value = "";
+
+    document.getElementById("label-anadir-alimento").innerText = "▶ ➕ Añadir nuevo elemento";
+    document.getElementById("btn-guardar-alimento").innerText = "Guardar en la Biblioteca";
+    document.getElementById("btn-cancelar-edicion").style.display = "none";
+    document.getElementById("form-alimento-container").removeAttribute("open");
+  }
+
+  function borrarAlimento(id) {
+    if (!confirm("¿Seguro que deseas eliminar este alimento de la biblioteca? No se perderá su historial pasado.")) return;
+
+    let alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
+    alimentos = alimentos.filter(a => a.id !== id);
+    localStorage.setItem("db_alimentos", JSON.stringify(alimentos));
+
     actualizarApp();
   }
 
@@ -495,7 +570,12 @@
     const contenedor = document.getElementById("lista-alimentos");
     contenedor.innerHTML = "";
 
-    alimentos.filter(a => a.nombre.toLowerCase().includes(filtro)).forEach(alimento => {
+    // ORDENAR ALFABÉTICAMENTE
+    const alimentosFiltradosYOrdenados = alimentos
+      .filter(a => a.nombre.toLowerCase().includes(filtro))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }));
+
+    alimentosFiltradosYOrdenados.forEach(alimento => {
       const stats = obtenerEstadisticasAlimento(alimento.id);
       const historialFiltrado = registros.filter(r => r.alimentoId === alimento.id);
       
@@ -503,8 +583,6 @@
       if (historialFiltrado.length > 0) {
         historialFiltrado.forEach(r => {
           const g1 = r.g1 || '--'; const g2 = r.g2 || '--'; const g3 = r.g3 || '--'; const g4 = r.g4 || '--';
-          
-          // Verificar si hubo alguna dosis correctora inyectada a posteriori
           const tieneCorrectora = (r.i1 || r.i2 || r.i3 || r.i4) ? ` (+Corr)` : '';
           const fechaCorta = r.fecha ? r.fecha.split(',')[0] : 'S/F';
           
@@ -521,6 +599,10 @@
       const div = document.createElement("div");
       div.className = "alimento-item";
       div.innerHTML = `
+        <div class="acciones-alimento">
+          <button class="btn-accion" onclick="editarAlimento('${alimento.id}')" title="Editar">✏️</button>
+          <button class="btn-accion" onclick="borrarAlimento('${alimento.id}')" title="Eliminar">🗑️</button>
+        </div>
         <div class="alimento-header"><strong>${alimento.nombre}</strong><span class="badge">${alimento.categoria}</span></div>
         <div style="margin-top: 6px;">
           <span class="badge absorcion">⏳ Abs. ${alimento.absorcion}</span>
@@ -574,7 +656,6 @@
     const stats = obtenerEstadisticasAlimento(id);
     if(stats) {
       panel.style.display = "grid";
-      /* Caja estética usando el icono del pan solicitado para la media de raciones */
       panel.innerHTML = `<div>🔄 Veces: ${stats.veces}</div><div>🍞 Rac M: ${stats.racionesMedia}</div><div>💉 Insulina M: ${stats.insulinaMedia}U</div><div>⏱️ Hist: ${stats.g1m}|${stats.g2m}|${stats.g3m}|${stats.g4m}</div>`;
     } else {
       panel.style.display = "block"; panel.innerHTML = "✨ Primera vez que registras este alimento.";
