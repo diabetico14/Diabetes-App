@@ -1,428 +1,539 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Diabetes Tracking App</title>
-  <style>
-    /* CSS Integrado para que no falle nada */
-    :root { --primary: #007aff; --success: #34c759; --warning: #ff9500; --danger: #ff3b30; --bg: #f2f2f7; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 10px; padding-bottom: 80px; color: #1c1c1e; }
-    .app-container { max-width: 500px; margin: 0 auto; }
-    .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-    h2, h4 { margin-top: 0; margin-bottom: 10px; }
-    .form-group { margin-bottom: 12px; }
-    label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; color: #3a3a3c; }
-    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #c7c7cc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
-    button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--primary); color: white; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 5px; }
-    button:active { opacity: 0.8; }
-    .badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; background: #e5e5ea; color: #3a3a3c; margin-right: 4px; }
-    .badge.absorcion { background: #e1f5fe; color: #0288d1; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: white; border-top: 1px solid #c7c7cc; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
-    .nav-btn { background: none; color: #8e8e93; border: none; width: auto; padding: 5px; font-size: 12px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-    .nav-btn.active { color: var(--primary); }
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; color: #636366; }
-    .alimento-item { background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e5e5ea; }
-    .btn-danger { background: var(--danger); }
-    .btn-warning { background: var(--warning); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestor Diabetes Pro</title>
+    <style>
+        :root {
+            --bg-color: #f6f8fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --primary-green: #5cb85c;
+            --primary-green-hover: #4cae4c;
+            --border-color: #e1e4e8;
+            --accent-blue: #2b6cb0;
+        }
 
-    /* Estilos añadidos para la cuadrícula de horas en el formulario */
-    .reg-grid-horas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-    .reg-hora-box { background: #f8f9fa; border: 1px solid #e5e5ea; border-radius: 8px; padding: 8px; }
-    .reg-hora-box b { font-size: 13px; color: var(--primary); display: block; margin-bottom: 4px; }
-    .reg-hora-box input { padding: 6px; font-size: 13px; margin-bottom: 4px; }
-    .reg-hora-box input:last-child { margin-bottom: 0; }
-  </style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            padding: 15px; 
+            padding-bottom: 85px; /* Espacio para que el menú inferior no tape nada */
+        }
+
+        .container { 
+            max-width: 480px; 
+            margin: 0 auto; 
+        }
+
+        /* PESTAÑAS (Se muestran/ocultan con el menú) */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 20px; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+            margin-bottom: 20px; 
+            border: 1px solid var(--border-color); 
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4cae4c;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 6px; 
+            font-weight: 600; 
+            font-size: 14px; 
+            color: #4a5568;
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 15px; 
+            border: 1px solid #cbd5e0; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            background: #edf2f7; 
+            color: #2d3748;
+            -webkit-appearance: none;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        input:focus, select:focus { 
+            border-color: #5cb85c; 
+            outline: none; 
+            background: #fff; 
+        }
+
+        /* Bloque Dual */
+        .config-reparto {
+            border: 1.5px dashed #5cb85c;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+            background-color: #fafdfff6;
+        }
+
+        .reparto-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #5cb85c;
+            margin-bottom: 10px;
+        }
+
+        .inputs-inline { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px; 
+        }
+
+        .inputs-inline input {
+            margin-bottom: 8px;
+            background: #fff;
+        }
+
+        /* Monitoreo 1h a 4h */
+        .seccion-monitoreo {
+            margin-top: 5px;
+            margin-bottom: 20px;
+            border-top: 1px dashed #cbd5e0;
+            padding-top: 15px;
+        }
+
+        .monitoreo-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+
+        .grid-horas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .hora-box {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .hora-label {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .hora-box input {
+            padding: 8px;
+            font-size: 14px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        /* Botones */
+        .btn-confirmar { 
+            width: 100%; 
+            padding: 14px; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            background-color: var(--primary-green);
+            color: white;
+        }
+
+        .btn-danger {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #ff3b30;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        /* Historial y píldoras */
+        .registro-card {
+            border-left: 4px solid var(--primary-green);
+            padding: 12px;
+            background: #fcfdfc;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-green);
+            margin-bottom: 12px;
+        }
+
+        .registro-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .pildoras-horas {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 8px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+
+        .pildora {
+            background: #fff;
+            padding: 4px 6px;
+            font-size: 11px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* MENÚ INFERIOR ESTILO IPHONE */
+        .navbar-inferior {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 999;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8e8e93;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 33%;
+            height: 100%;
+            justify-content: center;
+        }
+
+        .nav-item.active {
+            color: var(--primary-green);
+        }
+
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 3px;
+        }
+
+        /* Estilos Calculadora */
+        .calc-resultado {
+            background: #eef9ee;
+            border: 1px solid #c2eec2;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2b752b;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 
-<div class="app-container">
-  
-  <section id="tab-inicio" class="tab-content active">
-    <h2>Inicio 🏠</h2>
-    <div class="card" style="border-left: 5px solid var(--warning);">
-      <h4 style="color: var(--warning);">⏱️ Seguimiento Postprandial (+1h a +4h)</h4>
-      <p style="font-size: 12px; color:#666; margin-top:-5px;">Introduce aquí tus glucemias y si pusiste más insulina después de comer.</p>
-      <div id="inicio-pendientes">No tienes mediciones pendientes de las últimas horas.</div>
-    </div>
-    
-    <div class="card">
-      <h4>Último registro</h4>
-      <p id="inicio-ultimo">Aún no has registrado ninguna comida.</p>
-    </div>
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-      <button onclick="cambiarTab('registro')">📝 Registrar Comida</button>
-      <button onclick="cambiarTab('calculadora')" style="background:#5856d6;">🧮 Calculadora</button>
-    </div>
-  </section>
+<div class="container">
 
-  <section id="tab-biblioteca" class="tab-content">
-    <h2>Biblioteca de Alimentos 📚</h2>
-    
-    <details class="card" id="form-biblioteca-container">
-      <summary id="form-biblioteca-titulo">➕ Añadir nuevo alimento/plato</summary>
-      <input type="hidden" id="bib-id">
-      <div class="form-group" style="margin-top:10px;">
-        <label>Nombre:</label>
-        <input type="text" id="bib-nombre" placeholder="Ej: Pizza Barbacoa">
-      </div>
-      <div class="form-group">
-        <label>Raciones de HC habituales:</label>
-        <input type="number" id="bib-carbos" placeholder="Ej: 6.5" step="0.1">
-      </div>
-      <div class="form-group">
-        <label>Tipo de absorción:</label>
-        <select id="bib-absorcion">
-          <option value="Rápida">Rápida</option>
-          <option value="Media">Media</option>
-          <option value="Lenta">Lenta</option>
-          <option value="Doble Pico">Doble Pico</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Notas personales:</label>
-        <textarea id="bib-notas" placeholder="Ej: Añadir más insulina al final..."></textarea>
-      </div>
-      <button onclick="guardarAlimento()" id="btn-guardar-bib">Guardar en Biblioteca</button>
-      <button onclick="cancelarEdicion()" id="btn-cancelar-bib" class="btn-danger" style="display:none; margin-top:5px;">Cancelar Edición</button>
-    </details>
-
-    <div class="form-group" style="margin-top: 15px;">
-      <input type="text" id="buscador-bib" placeholder="🔍 Buscar en mi biblioteca..." oninput="renderizarBiblioteca()">
-    </div>
-    
-    <div id="lista-alimentos"></div>
-  </section>
-
-  <section id="tab-registro" class="tab-content">
-    <h2>Registrar Comida 📝</h2>
-    
-    <div class="card">
-      <label>1. Selecciona el alimento/plato:</label>
-      <select id="reg-alimento-id" onchange="actualizarPrevisualizacionHistorica()">
-        <option value="">-- Selecciona --</option>
-      </select>
-      <div id="previsualizacion-historica" class="stats-grid" style="margin-top:12px; background:#f2f2f7; padding:10px; border-radius:8px; display:none;"></div>
-    </div>
-
-    <div class="card">
-      <h4 style="color:var(--primary);">✨ ANTES DE COMER</h4>
-      <div class="form-group"><label>Glucemia actual (mg/dL):</label><input type="number" id="reg-glucemia-pre"></div>
-      <div class="form-group"><label>Insulina Activa (U):</label><input type="number" id="reg-insulina-activa" value="0" step="0.1"></div>
-    </div>
-
-    <div class="card">
-      <h4 style="color:var(--success);">🍔 COMIDA Y DOSIS</h4>
-      <div class="form-group">
-        <label>Tipo de absorción detectado:</label>
-        <input type="text" id="reg-absorcion-ver" readonly style="background: #e5e5ea; font-weight: bold; color: #0288d1;">
-      </div>
-      <div class="form-group"><label>Raciones de HC reales:</label><input type="number" id="reg-raciones" step="0.1"></div>
-      <div class="form-group"><label>Insulina Total Inyectada (U):</label><input type="number" id="reg-insulina-inyectada" step="0.5"></div>
-      
-      <div class="form-group">
-        <label>Tipo de Bolo / Reparto:</label>
-        <select id="reg-tipo-bolo" onchange="toggleSeccionReparto()">
-          <option value="Normal">Normal (Todo junto)</option>
-          <option value="Dual">Bolo Dual (Dividir dosis)</option>
-          <option value="Extendido">Bolo Extendido</option>
-        </select>
-      </div>
-
-      <div id="seccion-reparto" style="display:none; background:#f1fcf4; border:1px dashed var(--success); padding:10px; border-radius:8px; margin-bottom:12px;">
-        <label style="color:#248a3d; font-size:13px;">⚙️ Configuración del Reparto de Dosis:</label>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:5px;">
-          <div><span style="font-size:12px;">% Inmediato:</span><input type="number" id="reg-reparto-inm" placeholder="Ej: 60"></div>
-          <div><span style="font-size:12px;">% Retardado:</span><input type="number" id="reg-reparto-ret" placeholder="Ej: 40"></div>
+    <!-- PESTAÑA 1: CALCULADORA -->
+    <div id="tab-calculadora" class="tab-content">
+        <div class="card">
+            <div class="card-title">🧮 Calculadora de Raciones</div>
+            <label>Gramos de alimento:</label>
+            <input type="number" id="calcGramos" placeholder="Ej: 150" oninput="calcularRaciones()">
+            
+            <label>HC por cada 100g de alimento:</label>
+            <input type="number" id="calcHc100" placeholder="Ej: 70" oninput="calcularRaciones()">
+            
+            <div class="calc-resultado">
+                Raciones Resultantes: <span id="resultadoRaciones">0.0</span> HC
+            </div>
+            <button class="btn-confirmar" style="margin-top:15px; background-color: var(--accent-blue);" onclick="copiarRacionesAFormulario()">
+                👉 Usar raciones en mi dosis
+            </button>
         </div>
-        <div style="margin-top:5px;"><span style="font-size:12px;">Duración de la extensión (Horas):</span><input type="number" id="reg-reparto-horas" placeholder="Ej: 3" step="0.5"></div>
-      </div>
+    </div>
 
-      <label style="margin-top:15px; margin-bottom:6px; color:#1c1c1e;">⏱️ Monitoreo Estimado/Posterior (1h a 4h):</label>
-      <div class="reg-grid-horas">
-        <div class="reg-hora-box">
-          <b>⏳ +1 Hora</b>
-          <input type="number" id="reg-g1" placeholder="Glucemia">
-          <input type="number" id="reg-c1" step="0.5" placeholder="Insulina U">
+
+    <!-- PESTAÑA 2: COMIDA Y DOSIS (TU PANTALLA PRINCIPAL) -->
+    <div id="tab-dosis" class="tab-content active">
+        <div class="card">
+            <div class="card-title">🍔 COMIDA Y DOSIS</div>
+            
+            <label>Tipo de absorción detectado:</label>
+            <input type="text" id="tipoAbsorcion" value="Rápida" placeholder="Ej: Rápida, Lenta...">
+
+            <label>Raciones de HC reales:</label>
+            <input type="number" id="racionesHC" value="6" placeholder="Ej: 6">
+
+            <label>Insulina Total Inyectada (U):</label>
+            <input type="number" id="insulinaTotal" step="0.5" placeholder="Introduce unidades">
+
+            <label>Tipo de Bolo / Reparto:</label>
+            <select id="tipoBolo" onchange="alternarBloqueReparto()">
+                <option value="Bolo Dual (Dividir dosis)">Bolo Dual (Dividir dosis)</option>
+                <option value="Bolo Normal">Bolo Normal</option>
+            </select>
+
+            <!-- Configuración del Reparto -->
+            <div class="config-reparto" id="bloqueReparto">
+                <div class="reparto-title">⚙️ Configuración del Reparto de Dosis:</div>
+                <div class="inputs-inline">
+                    <div>
+                        <label style="font-size: 12px;">% Inmediato:</label>
+                        <input type="number" id="pctInmediato" placeholder="Ej: 60">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px;">% Retardado:</label>
+                        <input type="number" id="pctRetardado" placeholder="Ej: 40">
+                    </div>
+                </div>
+                <label style="font-size: 12px; margin-top: 4px;">Duración de la extensión (Horas):</label>
+                <input type="number" id="duracionExtension" placeholder="Ej: 3" style="margin-bottom:0; background:#fff;">
+            </div>
+
+            <!-- MONITOREO ANTES DEL BOTÓN -->
+            <div class="seccion-monitoreo">
+                <div class="monitoreo-title">⏱️ Monitoreo Posterior (1h a 4h)</div>
+                <div class="grid-horas">
+                    <div class="hora-box">
+                        <span class="hora-label">A la 1 Hora</span>
+                        <input type="number" id="g1" placeholder="Glucemia">
+                        <input type="number" id="i1" step="0.5" placeholder="Insulina U">
+                    </div>
+                    <div class="hora-box">
+                        <span class="hora-label">A las 2 Horas</span>
+                        <input type="number" id="g2" placeholder="Glucemia">
+                        <input type="number" id="i2" step="0.5" placeholder="Insulina U">
+                    </div>
+                    <div class="hora-box">
+                        <span class="hora-label">A las 3 Horas</span>
+                        <input type="number" id="g3" placeholder="Glucemia">
+                        <input type="number" id="i3" step="0.5" placeholder="Insulina U">
+                    </div>
+                    <div class="hora-box">
+                        <span class="hora-label">A las 4 Horas</span>
+                        <input type="number" id="g4" placeholder="Glucemia">
+                        <input type="number" id="i4" step="0.5" placeholder="Insulina U">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-confirmar" onclick="guardarRegistro()">Confirmar e Inyectar 💉</button>
         </div>
-        <div class="reg-hora-box">
-          <b>⏳ +2 Horas</b>
-          <input type="number" id="reg-g2" placeholder="Glucemia">
-          <input type="number" id="reg-c2" step="0.5" placeholder="Insulina U">
+    </div>
+
+
+    <!-- PESTAÑA 3: HISTORIAL -->
+    <div id="tab-historial" class="tab-content">
+        <div class="card">
+            <div class="historial-title">📋 Historial de Inyecciones</div>
+            <div id="historial"></div>
+            <button class="btn-danger" onclick="borrarTodo()">Borrar Todo el Historial</button>
         </div>
-      </div>
-      <div class="reg-grid-horas">
-        <div class="reg-hora-box">
-          <b>⏳ +3 Horas</b>
-          <input type="number" id="reg-g3" placeholder="Glucemia">
-          <input type="number" id="reg-c3" step="0.5" placeholder="Insulina U">
-        </div>
-        <div class="reg-hora-box">
-          <b>⏳ +4 Horas</b>
-          <input type="number" id="reg-g4" placeholder="Glucemia">
-          <input type="number" id="reg-c4" step="0.5" placeholder="Insulina U">
-        </div>
-      </div>
-
-      <button onclick="guardarRegistroComida()" style="background:var(--success);">Confirmar e Inyectar 💉</button>
-    </div>
-  </section>
-
-  <section id="tab-calculadora" class="tab-content">
-    <h2>Calculadora de Platos 🧮</h2>
-    <div class="card">
-      <label>Añadir ingrediente al plato:</label>
-      <select id="calcu-alimento-id"></select>
-      <div class="form-group" style="margin-top:10px;">
-        <label>Multiplicador (Ej: 1 = ración estándar, 1.5 = ración y media):</label>
-        <input type="number" id="calcu-multiplicador" value="1" step="0.1">
-      </div>
-      <button onclick="agregarALaCalculadora()" style="background:#5856d6;">➕ Añadir al Combo</button>
     </div>
 
-    <div class="card">
-      <h4>Plato actual:</h4>
-      <ul id="calcu-lista-items" style="padding-left:20px; font-size:14px;"><li>El plato está vacío</li></ul>
-      <hr style="border:0; border-top:1px solid #eee;">
-      <p><b>Total Raciones:</b> <span id="calcu-total-hc">0</span> raciones</p>
-      <p><b>Absorción combinada:</b> <span id="calcu-absorcion-sugerida" style="color:var(--primary); font-weight:bold;">--</span></p>
-      <button onclick="volcarCalculadoraARegistro()">📝 Enviar todo a Registro</button>
-    </div>
-  </section>
+</div>
 
-  <section id="tab-recommendations" class="tab-content">
-    <h2>Recomendaciones IA 💡</h2>
-    <div class="card">
-      <label>Selecciona un alimento para analizar qué tal te funcionó:</label>
-      <select id="rec-alimento-id" onchange="generarRecomendacionInteligente()">
-        <option value="">-- Selecciona --</option>
-      </select>
-    </div>
-    <div id="rec-resultado">
-      <p style="text-align:center; color:#8e8e93;">Selecciona un alimento de la lista para analizar tus picos y ver mejoras.</p>
-    </div>
-  </section>
-
-  <nav class="bottom-nav">
-    <button onclick="cambiarTab('inicio')" class="nav-btn active" id="btn-inicio">🏠 Inicio</button>
-    <button onclick="cambiarTab('biblioteca')" class="nav-btn" id="btn-biblioteca">📚 Biblioteca</button>
-    <button onclick="cambiarTab('registro')" class="nav-btn" id="btn-registro">📝 Registro</button>
-    <button onclick="cambiarTab('calculadora')" class="nav-btn" id="btn-calculadora">🧮 Calcu</button>
-    <button onclick="cambiarTab('recommendations')" class="nav-btn" id="btn-recommendations">💡 Recs</button>
-  </nav>
-  
+<!-- MENÚ INFERIOR FIJO -->
+<div class="navbar-inferior">
+    <button class="nav-item" id="btn-tab-calculadora" onclick="cambiarPestana('calculadora')">
+        <span class="nav-icon">🧮</span>
+        <span>Calculadora</span>
+    </button>
+    <button class="nav-item active" id="btn-tab-dosis" onclick="cambiarPestana('dosis')">
+        <span class="nav-icon">🍔</span>
+        <span>Dosis</span>
+    </button>
+    <button class="nav-item" id="btn-tab-historial" onclick="cambiarPestana('historial')">
+        <span class="nav-icon">📋</span>
+        <span>Historial</span>
+    </button>
 </div>
 
 <script>
-// Base de datos iniciales por defecto (Evita que la app se vacíe al cerrar)
-const ALIMENTOS_PREDEFINIDOS = [
-  { id: "1", nombre: "Pizza Margarita Casera", carbosHabituales: 7.0, absorcion: "Doble Pico", notas: "Mucha grasa/queso. Suele requerir bolo dual." },
-  { id: "2", nombre: "Arroz Blanco con Tomate", carbosHabituales: 6.0, absorcion: "Rápida", notas: "Pico muy rápido a la hora." },
-  { id: "3", nombre: "Lentejas con Verdura", carbosHabituales: 4.5, absorcion: "Lenta", notas: "Fibra alta, la glucemia tarda en subir." },
-  { id: "4", nombre: "Pasta Integral boloñesa", carbosHabituales: 5.5, absorcion: "Media", notas: "Absorción moderada." }
-];
+    // Lógica para cambiar de pestaña en el menú inferior
+    function cambiarPestana(idPestana) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
 
-// Inicialización segura
-if (!localStorage.getItem("db_alimentos") || JSON.parse(localStorage.getItem("db_alimentos")).length === 0) {
-  localStorage.setItem("db_alimentos", JSON.stringify(ALIMENTOS_PREDEFINIDOS));
-}
-if (!localStorage.getItem("db_registros")) {
-  localStorage.setItem("db_registros", JSON.stringify([]));
-}
+        document.getElementById(`tab-${idPestana}`).classList.add('active');
+        document.getElementById(`btn-tab-${idPestana}`).classList.add('active');
 
-let platoConstruido = [];
-
-document.addEventListener("DOMContentLoaded", () => {
-  actualizarApp();
-});
-
-function actualizarApp() {
-  renderizarBiblioteca();
-  poblarTodosLosSelectores();
-  actualizarPanelInicio();
-}
-
-function cambiarTab(tabId) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById(`tab-${tabId}`).classList.add('active');
-  document.getElementById(`btn-${tabId}`).classList.add('active');
-}
-
-function toggleSeccionReparto() {
-  const tipoBolo = document.getElementById("reg-tipo-bolo").value;
-  const seccion = document.getElementById("seccion-reparto");
-  seccion.style.display = (tipoBolo === "Dual" || tipoBolo === "Extendido") ? "block" : "none";
-}
-
-// ==========================================
-// MÓDULO: BIBLIOTECA (GUARDAR / EDITAR)
-// ==========================================
-function guardarAlimento() {
-  const id = document.getElementById("bib-id").value;
-  const nombre = document.getElementById("bib-nombre").value.trim();
-  const carbos = parseFloat(document.getElementById("bib-carbos").value) || 0;
-  const absorcion = document.getElementById("bib-absorcion").value;
-  const notas = document.getElementById("bib-notas").value.trim();
-
-  if (!nombre) return alert("El nombre es obligatorio.");
-
-  let alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
-
-  if (id) {
-    // Modo Edición
-    const idx = alimentos.findIndex(a => a.id === id);
-    if(idx !== -1) {
-      alimentos[idx] = { id, nombre, carbosHabituales: carbos, absorcion, notas };
+        if(idPestana === 'historial') {
+            cargarHistorial();
+        }
     }
-    alert("¡Alimento modificado correctamente!");
-  } else {
-    // Modo Nuevo
-    const nuevo = { id: Date.now().toString(), nombre, carbosHabituales: carbos, absorcion, notas };
-    alimentos.push(nuevo);
-    alert("¡Alimento guardado!");
-  }
 
-  localStorage.setItem("db_alimentos", JSON.stringify(alimentos));
-  cancelarEdicion();
-  actualizarApp();
-}
-
-function editarAlimento(id) {
-  let alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
-  const al = alimentos.find(a => a.id === id);
-  if(!al) return;
-
-  // Rellenar formulario con datos existentes
-  document.getElementById("bib-id").value = al.id;
-  document.getElementById("bib-nombre").value = al.nombre;
-  document.getElementById("bib-carbos").value = al.carbosHabituales;
-  document.getElementById("bib-absorcion").value = al.absorcion;
-  document.getElementById("bib-notas").value = al.notas || "";
-
-  // Cambiar aspecto del contenedor
-  document.getElementById("form-biblioteca-container").setAttribute("open", "true");
-  document.getElementById("form-biblioteca-titulo").innerText = "📝 Editando: " + al.nombre;
-  document.getElementById("btn-guardar-bib").innerText = "Actualizar Cambios";
-  document.getElementById("btn-cancelar-bib").style.display = "block";
-  
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function cancelarEdicion() {
-  document.getElementById("bib-id").value = "";
-  document.getElementById("bib-nombre").value = "";
-  document.getElementById("bib-carbos").value = "";
-  document.getElementById("bib-notas").value = "";
-  document.getElementById("form-biblioteca-titulo").innerText = "➕ Añadir nuevo alimento/plato";
-  document.getElementById("btn-guardar-bib").innerText = "Guardar en Biblioteca";
-  document.getElementById("btn-cancelar-bib").style.display = "none";
-  document.getElementById("form-biblioteca-container").removeAttribute("open");
-}
-
-function eliminarAlimento(id) {
-  if(!confirm("¿Seguro que quieres borrar este alimento de la biblioteca?")) return;
-  let alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
-  alimentos = alimentos.filter(a => a.id !== id);
-  localStorage.setItem("db_alimentos", JSON.stringify(alimentos));
-  actualizarApp();
-}
-
-function obtenerEstadisticasAlimento(alimentoId) {
-  const registros = JSON.parse(localStorage.getItem("db_registros")) || [];
-  const filtrados = registros.filter(r => r.alimentoId === alimentoId);
-  if(filtrados.length === 0) return null;
-
-  let sumaPre = 0, c1=0, c2=0, c3=0, c4=0, sumaG1=0, sumaG2=0, sumaG3=0, sumaG4=0, totalCorrecciones=0;
-
-  filtrados.forEach(r => {
-    sumaPre += parseFloat(r.glucemiaPre || 0);
-    if(r.g1) { sumaG1 += parseFloat(r.g1); c1++; }
-    if(r.g2) { sumaG2 += parseFloat(r.g2); c2++; }
-    if(r.g3) { sumaG3 += parseFloat(r.g3); c3++; }
-    if(r.g4) { sumaG4 += parseFloat(r.g4); c4++; }
-    if(parseFloat(r.c1||0) > 0 || parseFloat(r.c2||0) > 0 || parseFloat(r.c3||0) > 0 || parseFloat(r.c4||0) > 0) {
-      totalCorrecciones++;
+    // Lógica de la calculadora
+    function calcularRaciones() {
+        const gramos = parseFloat(document.getElementById('calcGramos').value) || 0;
+        const hc100 = parseFloat(document.getElementById('calcHc100').value) || 0;
+        const raciones = (gramos * hc100) / 1000;
+        document.getElementById('resultadoRaciones').innerText = raciones.toFixed(1);
     }
-  });
 
-  return {
-    veces: filtrados.length,
-    glucemiaPreMedia: Math.round(sumaPre / filtrados.length),
-    g1m: c1 ? Math.round(sumaG1/c1) : '--', g2m: c2 ? Math.round(sumaG2/c2) : '--',
-    g3m: c3 ? Math.round(sumaG3/c3) : '--', g4m: c4 ? Math.round(sumaG4/c4) : '--',
-    correccionesFrecuentes: totalCorrecciones
-  };
-}
+    function copiarRacionesAFormulario() {
+        const raciones = document.getElementById('resultadoRaciones').innerText;
+        document.getElementById('racionesHC').value = raciones;
+        cambiarPestana('dosis');
+    }
 
-function renderizarBiblioteca() {
-  const alimentos = JSON.parse(localStorage.getItem("db_alimentos")) || [];
-  const filtro = document.getElementById("buscador-bib").value.toLowerCase();
-  const contenedor = document.getElementById("lista-alimentos");
-  contenedor.innerHTML = "";
+    // Mostrar/Ocultar bloque reparto
+    function alternarBloqueReparto() {
+        const tipoBolo = document.getElementById('tipoBolo').value;
+        const bloque = document.getElementById('bloqueReparto');
+        bloque.style.display = (tipoBolo === "Bolo Normal") ? 'none' : 'block';
+    }
 
-  alimentos.filter(a => a.nombre.toLowerCase().includes(filtro)).forEach(alimento => {
-    const stats = obtenerEstadisticasAlimento(alimento.id);
-    const div = document.createElement("div");
-    div.className = "alimento-item";
-    div.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-        <div>
-          <strong>${alimento.nombre}</strong><br>
-          <span class="badge absorcion">⏳ Abs. ${alimento.absorcion}</span>
-          <span class="badge" style="background:#fff3cd; color:#664d03;">🍞 ${alimento.carbosHabituales} Rac.</span>
-        </div>
-        <div style="display:flex; gap:5px;">
-          <button onclick="editarAlimento('${alimento.id}')" style="width:auto; padding:5px 10px; background:var(--warning); font-size:12px; margin:0;">✏️</button>
-          <button onclick="eliminarAlimento('${alimento.id}')" style="width:auto; padding:5px 10px; background:var(--danger); font-size:12px; margin:0;">🗑️</button>
-        </div>
-      </div>
-      ${alimento.notas ? `<p style="font-size:12px; margin:6px 0; color:#666;">📌 <i>${alimento.notas}</i></p>` : ''}
-      <div class="stats-grid" style="border-top:1px dashed #eee; margin-top:8px; padding-top:8px;">
-        <div>🔄 Consumido: ${stats ? stats.veces : 0} vec.</div>
-        <div>⚠️ Correcciones: ${stats ? stats.correccionesFrecuentes : 0}</div>
-        <div style="grid-column: span 2;">🩸 Medias Post (+1h a +4h): <b>${stats ? `${stats.g1m} | ${stats.g2m} | ${stats.g3m} | ${stats.g4m}` : '--|--|--|--'}</b></div>
-      </div>
-    `;
-    contenedor.appendChild(div);
-  });
-}
+    // Guardar registros completos
+    function guardarRegistro() {
+        const tipoAbsorcion = document.getElementById('tipoAbsorcion').value;
+        const racionesHC = document.getElementById('racionesHC').value;
+        const insulinaTotal = document.getElementById('insulinaTotal').value;
+        const tipoBolo = document.getElementById('tipoBolo').value;
 
-function poblarTodosLosSelectores() {
-  const alimentos = JSON.parse(localStorage.getItem("db_alimentos")) || [];
-  ["reg-alimento-id", "calcu-alimento-id", "rec-alimento-id"].forEach(id => {
-    const select = document.getElementById(id);
-    if (!select) return;
-    const previo = select.value;
-    select.innerHTML = id === "calcu-alimento-id" ? '<option value="">-- Escoge ingrediente --</option>' : '<option value="">-- Selecciona --</option>';
-    alimentos.forEach(a => { select.innerHTML += `<option value="${a.id}">${a.nombre}</option>`; });
-    select.value = previo;
-  });
-}
+        const pctInmediato = document.getElementById('pctInmediato').value || '-';
+        const pctRetardado = document.getElementById('pctRetardado').value || '-';
+        const duracionExtension = document.getElementById('duracionExtension').value || '-';
 
-// ==========================================
-// MÓDULO: REGISTRO
-// ==========================================
-function actualizarPrevisualizacionHistorica() {
-  const id = document.getElementById("reg-alimento-id").value;
-  const panel = document.getElementById("previsualizacion-historica");
-  const inputAbsorcion = document.getElementById("reg-absorcion-ver");
-  const selectBolo = document.getElementById("reg-tipo-bolo");
-  
-  if(!id) { panel.style.display = "none"; inputAbsorcion.value = ""; return; }
-  
-  const alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
-  const al = alimentos.find(a => a.id === id);
-  inputAbsorcion.value = al ? al.absorcion : "Media";
-  document.getElementById("reg-raciones").value = al ? al.carbosHabituales : "";
+        if(!insulinaTotal) { 
+            alert('Por favor, introduce la Insulina Total Inyectada.'); 
+            return; 
+        }
 
-  // Sugerir bolo según tipo de absorción de forma inteligente
-  if(al.absorcion === "Doble Pico" || al.absorcion === "Lenta") {
-    selectBolo.value = "Dual";
-    document.getElementById("reg-reparto-inm").value = al.absorcion === "Doble Pico" ? "50" : "40";
-    document.getElementById("reg-reparto-ret").value = al.absorcion === "Doble Pico" ? "50" : "60";
-    document.getElementById("
+        const nuevoRegistro = {
+            id: Date.now(),
+            fecha: new Date().toLocaleString('es-ES', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }),
+            tipoAbsorcion: tipoAbsorcion,
+            racionesHC: racionesHC,
+            insulinaTotal: insulinaTotal,
+            tipoBolo: tipoBolo,
+            reparto: tipoBolo !== "Bolo Normal" ? `${pctInmediato}% / ${pctRetardado}% (${duracionExtension}h)` : 'No aplica',
+            horas: {
+                h1: { g: document.getElementById('g1').value || '-', i: document.getElementById('i1').value || '-' },
+                h2: { g: document.getElementById('g2').value || '-', i: document.getElementById('i2').value || '-' },
+                h3: { g: document.getElementById('g3').value || '-', i: document.getElementById('i3').value || '-' },
+                h4: { g: document.getElementById('g4').value || '-', i: document.getElementById('i4').value || '-' }
+            }
+        };
 
+        let registros = JSON.parse(localStorage.getItem('diabetes_data_final')) || [];
+        registros.unshift(nuevoRegistro);
+        localStorage.setItem('diabetes_data_final', JSON.stringify(registros));
+
+        // Limpiar campos variables
+        document.getElementById('insulinaTotal').value = '';
+        document.getElementById('pctInmediato').value = '';
+        document.getElementById('pctRetardado').value = '';
+        document.getElementById('duracionExtension').value = '';
+        for(let i=1; i<=4; i++) {
+            document.getElementById(`g${i}`).value = '';
+            document.getElementById(`i${i}`).value = '';
+        }
+
+        alert('¡Registro guardado con éxito!');
+        cambiarPestana('historial');
+    }
+
+    function cargarHistorial() {
+        const historialDiv = document.getElementById('historial');
+        historialDiv.innerHTML = '';
+        const registros = JSON.parse(localStorage.getItem('diabetes_data_final')) || [];
+
+        if(registros.length === 0) {
+            historialDiv.innerHTML = '<p style="text-align:center; color:#8e8e93; font-size:14px;">No hay registros guardados.</p>';
+            return;
+        }
+
+        registros.forEach(r => {
+            const item = document.createElement('div');
+            item.className = 'registro-card';
+            item.innerHTML = `
+                <div class="registro-header">
+                    <span>Absorción: ${r.tipoAbsorcion}</span>
+                    <span style="font-size:12px; color:#718096;">${r.fecha}</span>
+                </div>
+                <div style="font-size:13px; color:#4a5568; margin-bottom:8px; line-height:1.4;">
+                    • <strong>HC:</strong> ${r.racionesHC} raciones<br>
+                    • <strong>Insulina Total:</strong> ${r.insulinaTotal} U<br>
+                    • <strong>Bolo:</strong> ${r.tipoBolo}<br>
+                    ${r.tipoBolo !== "Bolo Normal" ? `• <strong>Reparto:</strong> ${r.reparto}` : ''}
+                </div>
+                <div class="pildoras-horas">
+                    <div class="pildora"><strong>1h:</strong> G: ${r.horas.h1.g} | I: ${r.horas.h1.i}U</div>
+                    <div class="pildora"><strong>2h:</strong> G: ${r.horas.h2.g} | I: ${r.horas.h2.i}U</div>
+                    <div class="pildora"><strong>3h:</strong> G: ${r.horas.h3.g} | I: ${r.horas.h3.i}U</div>
+                    <div class="pildora"><strong>4h:</strong> G: ${r.horas.h4.g} | I: ${r.horas.h4.i}U</div>
+                </div>
+            `;
+            historialDiv.appendChild(item);
+        });
+    }
+
+    function borrarTodo() {
+        if(confirm('¿Seguro que quieres eliminar todo el historial de inyecciones?')) {
+            localStorage.removeItem('diabetes_data_final');
+            cargarHistorial();
+        }
+    }
+
+    window.onload = function() {
+        alternarBloqueReparto();
+    }
+</script>
+
+</body>
+</html>
