@@ -5,59 +5,107 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Diabetes Tracking App</title>
   
-  <!-- ========================================== -->
-  <!-- ESTILOS CSS -->
-  <!-- ========================================== -->
   <style>
     :root {
-      --primary: #007aff;
-      --bg: #f2f2f7;
-      --card-bg: #ffffff;
-      --text: #1c1c1e;
+      /* Colores inspirados fielmente en tus capturas */
+      --primary: #3197a5;          /* Turquesa corporativo principal */
+      --primary-dark: #236f7a;     /* Turquesa oscuro para interacción */
+      --primary-light: #e6f4f6;    /* Fondo turquesa muy suave */
+      --bg: #f4f5f9;               /* Gris de fondo limpio para iOS */
+      --card-bg: #ffffff;          /* Blanco puro para las tarjetas */
+      --text: #2c2c2e;             /* Texto oscuro principal */
+      --text-muted: #8e8e93;       /* Gris para textos secundarios */
+      --border-color: #e5e5ea;     /* Gris suave para separadores */
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg); 
       color: var(--text); 
       margin: 0; 
       padding: 0; 
       display: flex; 
       justify-content: center;
+      -webkit-font-smoothing: antialiased;
     }
 
     .app-container {
       width: 100%; 
       max-width: 430px; 
       min-height: 100vh; 
-      box-sizing: border-box; 
-      padding: 16px 16px 90px 16px; 
+      padding: 20px 16px 100px 16px; 
       position: relative;
     }
 
-    h2 { font-size: 28px; margin-bottom: 20px; font-weight: 700; }
-    h4 { margin: 0 0 8px 0; color: #8e8e93; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+    h2 { 
+      font-size: 26px; 
+      margin-bottom: 20px; 
+      font-weight: 700; 
+      color: #1c1c1e;
+      letter-spacing: -0.5px;
+    }
+    
+    h3 {
+      font-size: 14px; 
+      font-weight: 700;
+      margin-top: 20px; 
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    h4 { 
+      margin: 0 0 10px 0; 
+      color: var(--primary); 
+      font-size: 13px; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
 
     .card {
       background: var(--card-bg); 
-      border-radius: 12px; 
-      padding: 16px; 
+      border-radius: 16px; 
+      padding: 18px; 
       margin-bottom: 16px; 
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      border: 1px solid var(--border-color);
     }
 
-    .alert-card { border-left: 4px solid #ff9500; }
-    .form-group { margin-bottom: 12px; }
-    label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .alert-card { 
+      border-left: 4px solid #ff9500; 
+    }
+
+    .form-group { 
+      margin-bottom: 14px; 
+    }
+
+    label { 
+      display: block; 
+      font-size: 14px; 
+      font-weight: 600; 
+      margin-bottom: 6px; 
+      color: #3a3a3c;
+    }
 
     input, select, textarea {
       width: 100%; 
-      padding: 10px; 
-      border: 1px solid #c7c7cc; 
-      border-radius: 8px; 
+      padding: 12px; 
+      border: 1px solid #d1d1d6; 
+      border-radius: 10px; 
       font-size: 16px; 
-      box-sizing: border-box; 
       background: #fff;
+      color: var(--text);
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
     }
 
     button {
@@ -65,15 +113,21 @@
       background: var(--primary); 
       color: white; 
       border: none; 
-      padding: 12px; 
-      border-radius: 8px; 
+      padding: 14px; 
+      border-radius: 25px; /* Redondeado elegante como el botón Inyectar de la foto */
       font-size: 16px; 
       font-weight: 600; 
       cursor: pointer;
+      box-shadow: 0 4px 8px rgba(49, 151, 165, 0.2);
+      transition: background 0.2s, transform 0.1s;
     }
 
-    button:active { opacity: 0.8; }
+    button:active { 
+      background: var(--primary-dark);
+      transform: scale(0.98); 
+    }
 
+    /* BARRA DE NAVEGACIÓN INFERIOR ESTILO IOS */
     .bottom-nav {
       position: fixed; 
       bottom: 0; 
@@ -81,19 +135,21 @@
       transform: translateX(-50%); 
       width: 100%; 
       max-width: 430px; 
-      height: 65px;
-      background: rgba(255,255,255,0.9); 
-      backdrop-filter: blur(10px); 
-      border-top: 1px solid #c7c7cc; 
+      height: 70px;
+      background: rgba(255,255,255,0.94); 
+      backdrop-filter: blur(20px); 
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid #d1d1d6; 
       display: flex; 
       justify-content: space-around; 
       align-items: center; 
       z-index: 1000;
+      padding-bottom: 8px;
     }
 
     .nav-btn {
       background: none; 
-      color: #8e8e93; 
+      color: var(--text-muted); 
       border: none; 
       padding: 5px; 
       font-size: 11px; 
@@ -102,54 +158,77 @@
       align-items: center; 
       width: auto;
       cursor: pointer;
+      box-shadow: none;
+      font-weight: 500;
     }
 
-    .nav-btn span { font-size: 20px; margin-bottom: 2px; }
-    .nav-btn.active { color: var(--primary); font-weight: bold; }
+    .nav-btn span { 
+      font-size: 22px; 
+      margin-bottom: 2px; 
+      transition: transform 0.2s;
+    }
+    
+    .nav-btn.active { 
+      color: var(--primary); 
+      font-weight: 700; 
+    }
+    
+    .nav-btn.active span {
+      transform: scale(1.1);
+    }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
     .alimento-item { 
       background: white; 
-      border-radius: 12px; 
-      padding: 14px; 
-      margin-bottom: 10px; 
-      border: 1px solid #e5e5ea; 
+      border-radius: 14px; 
+      padding: 16px; 
+      margin-bottom: 12px; 
+      border: 1px solid var(--border-color); 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
 
     .alimento-header { display: flex; justify-content: space-between; align-items: center; }
-    .badge { background: #e5e5ea; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-    .badge.absorcion { background: #e3f2fd; color: #007aff; }
+    .badge { background: #f2f2f7; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #555; }
+    .badge.absorcion { background: var(--primary-light); color: var(--primary); }
 
     .stats-grid { 
       display: grid; 
       grid-template-columns: 1fr 1fr; 
-      gap: 8px; 
-      margin-top: 10px; 
+      gap: 10px; 
+      margin-top: 12px; 
       font-size: 13px; 
-      color: #636366; 
+      color: #48484a; 
     }
 
-    /* Estilos específicos para la cuadrícula de pendientes con insulina */
+    /* Cuadrícula de registros pendientes con insulina */
     .grid-pendientes {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 6px;
-      margin-top: 8px;
+      margin-top: 10px;
     }
     .col-pendiente {
-      background: #f2f2f7;
-      padding: 6px;
-      border-radius: 6px;
+      background: #f8f9fa;
+      padding: 8px 4px;
+      border-radius: 8px;
       font-size: 11px;
       text-align: center;
+      border: 1px solid #e5e5ea;
     }
     .col-pendiente input {
-      padding: 4px;
+      padding: 6px 2px;
       font-size: 12px;
       text-align: center;
-      margin-top: 2px;
+      margin-top: 4px;
+      border-radius: 6px;
+    }
+    
+    .obligatorio {
+      color: #ff3b30;
+      font-weight: bold;
+      margin-left: 2px;
     }
   </style>
 </head>
@@ -157,9 +236,6 @@
 
 <div class="app-container">
 
-  <!-- ========================================== -->
-  <!-- TAB: INICIO -->
-  <!-- ========================================== -->
   <section id="tab-inicio" class="tab-content active">
     <h2>Inicio 🏠</h2>
     
@@ -169,31 +245,27 @@
     </div>
 
     <div class="card">
-      <h4>Registros pendientes (+1h a +4h)</h4>
+      <h4 style="color:#ff9500;">Registros pendientes (+1h a +4h)</h4>
       <div id="inicio-pendientes">No tienes mediciones postprandiales pendientes de las últimas 5 horas.</div>
     </div>
   </section>
 
-  <!-- ========================================== -->
-  <!-- TAB: REGISTRO -->
-  <!-- ========================================== -->
   <section id="tab-registro" class="tab-content">
     <h2>Registrar Comida 📝</h2>
     
     <div class="card">
       <div class="form-group">
-        <label>1. Selecciona el alimento/plato: <span style="color: #ff3b30;">*</span></label>
+        <label>1. Selecciona el alimento/plato:<span class="obligatorio">*</span></label>
         <select id="reg-alimento-id" onchange="actualizarPrevisualizacionHistorica()">
-          <!-- Se puebla automáticamente -->
-        </select>
+          </select>
       </div>
 
-      <div id="previsualizacion-historica" class="stats-grid card" style="display:none; background:#f2f2f7; margin-bottom:12px; padding:10px;"></div>
+      <div id="previsualizacion-historica" class="stats-grid card" style="display:none; background:#f8f9fa; margin-bottom:14px; padding:12px; border: 1px solid #e5e5ea;"></div>
       
-      <h3 style="font-size:14px; color:#007aff; margin-top:15px; margin-bottom:10px;">✨ ANTES DE COMER</h3>
+      <h3 style="color: var(--primary);">✨ ANTES DE COMER</h3>
 
       <div class="form-group">
-        <label>Glucemia actual (mg/dL): <span style="color: #ff3b30;">*</span></label>
+        <label>Glucemia actual (mg/dL):<span class="obligatorio">*</span></label>
         <input type="number" id="reg-glucemia-pre" placeholder="Ej: 110">
       </div>
 
@@ -210,15 +282,15 @@
         </select>
       </div>
 
-      <h3 style="font-size:14px; color:#34c759; margin-top:15px; margin-bottom:10px;">🍔 COMIDA Y DOSIS</h3>
+      <h3 style="color: #34c759;">🍔 COMIDA Y DOSIS</h3>
 
       <div class="form-group">
-        <label>Raciones de HC reales: <span style="color: #ff3b30;">*</span></label>
+        <label>Raciones de HC reales:<span class="obligatorio">*</span></label>
         <input type="number" id="reg-raciones" placeholder="Ej: 6" step="0.1">
       </div>
       
       <div class="form-group">
-        <label>Insulina Inyectada (U): <span style="color: #ff3b30;">*</span></label>
+        <label>Insulina Inyectada (U):<span class="obligatorio">*</span></label>
         <input type="number" id="reg-insulina-inyectada" placeholder="Introduce unidades" step="0.5">
       </div>
       
@@ -240,13 +312,10 @@
     </div>
   </section>
 
-  <!-- ========================================== -->
-  <!-- TAB: BIBLIOTECA -->
-  <!-- ========================================== -->
   <section id="tab-biblioteca" class="tab-content">
     <h2>Biblioteca 📚</h2>
     
-    <details class="card" style="margin-bottom:15px;">
+    <details class="card" style="margin-bottom:15px; border-color: var(--primary);">
       <summary style="font-weight:bold; cursor:pointer; color:var(--primary);">▶ ➕ Añadir nuevo elemento</summary>
       <div style="margin-top:15px;">
         <div class="form-group">
@@ -282,25 +351,20 @@
     </div>
 
     <div id="lista-alimentos">
-      <!-- Se renderiza mediante JavaScript -->
-    </div>
+      </div>
   </section>
 
-  <!-- ========================================== -->
-  <!-- TAB: CALCULADORA -->
-  <!-- ========================================== -->
   <section id="tab-calculadora" class="tab-content">
     <h2>Calculadora 🧮</h2>
     <div class="card">
       <label>Añadir alimento al plato:</label>
       <select id="calcu-alimento-id">
-        <!-- Se puebla automáticamente -->
-      </select>
+        </select>
       <div class="form-group" style="margin-top:10px;">
         <label>Multiplicador de raciones:</label>
         <input type="number" id="calcu-multiplicador" value="1" step="0.1">
       </div>
-      <button onclick="agregarALaCalculadora()" style="background:#5856d6;">➕ Añadir al plato</button>
+      <button onclick="agregarALaCalculadora()" style="background:#5856d6; box-shadow: 0 4px 8px rgba(88, 86, 214, 0.2);">➕ Añadir al plato</button>
     </div>
 
     <div class="card">
@@ -308,36 +372,29 @@
       <ul id="calcu-lista-items" style="padding-left:20px; font-size:14px; margin-bottom:15px;">
         <li>El plato está vacío</li>
       </ul>
-      <hr style="border:0; border-top:1px solid #eee; margin-bottom:10px;">
-      <p><b>Total Raciones Estimadas:</b> <span id="calcu-total-hc">0</span> raciones</p>
+      <hr style="border:0; border-top:1px solid var(--border-color); margin-bottom:10px;">
+      <p><b>Total Raciones Estimadas:</b> <span id="calcu-total-hc" style="color:var(--primary); font-weight:bold;">0</span> raciones</p>
       <p><b>Absorción combinada sugerida:</b> <span id="calcu-absorcion-sugerida" style="color:var(--primary); font-weight:bold;">--</span></p>
       
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;">
         <button onclick="volcarCalculadoraARegistro()">📝 Volcar a registro</button>
-        <button onclick="guardarComboComoPlatoHabitual()" style="background:#34c759;">💾 Guardar como plato habitual</button>
+        <button onclick="guardarComboComoPlatoHabitual()" style="background:#34c759; box-shadow: 0 4px 8px rgba(52, 199, 89, 0.2);">💾 Guardar como plato</button>
       </div>
     </div>
   </section>
 
-  <!-- ========================================== -->
-  <!-- TAB: RECOMENDACIONES -->
-  <!-- ========================================== -->
   <section id="tab-recomendaciones" class="tab-content">
     <h2>Recomendaciones 💡</h2>
     <div class="card">
       <label>Selecciona un alimento para analizar tu histórico:</label>
       <select id="rec-alimento-id" onchange="generarRecomendacionInteligente()">
-        <!-- Se puebla automáticamente -->
-      </select>
+        </select>
     </div>
     <div id="rec-resultado">
-      <p style="text-align:center; color:#8e8e93;">Selecciona un alimento de la lista para activar el módulo inteligente.</p>
+      <p style="text-align:center; color:var(--text-muted);">Selecciona un alimento de la lista para activar el módulo inteligente.</p>
     </div>
   </section>
 
-  <!-- ========================================== -->
-  <!-- BARRA DE NAVEGACIÓN INFERIOR (Ordenada) -->
-  <!-- ========================================== -->
   <nav class="bottom-nav">
     <button onclick="cambiarTab('inicio')" class="nav-btn active" id="btn-inicio">
       <span>🏠</span>Inicio
@@ -358,9 +415,6 @@
   
 </div>
 
-<!-- ========================================== -->
-<!-- MOTOR LÓGICO JAVASCRIPT -->
-<!-- ========================================== -->
 <script>
   if (!localStorage.getItem("db_alimentos")) localStorage.setItem("db_alimentos", JSON.stringify([]));
   if (!localStorage.getItem("db_registros")) localStorage.setItem("db_registros", JSON.stringify([]));
@@ -449,34 +503,37 @@
       if (historialFiltrado.length > 0) {
         historialFiltrado.forEach(r => {
           const g1 = r.g1 || '--'; const g2 = r.g2 || '--'; const g3 = r.g3 || '--'; const g4 = r.g4 || '--';
-          const insCorr = (r.i1 || r.i2 || r.i3 || r.i4) ? ` Corr` : '';
+          
+          // Verificar si hubo alguna dosis correctora inyectada a posteriori
+          const tieneCorrectora = (r.i1 || r.i2 || r.i3 || r.i4) ? ` (+Corr)` : '';
           const fechaCorta = r.fecha ? r.fecha.split(',')[0] : 'S/F';
+          
           lineasHistorial += `
-            <div style="display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px dotted #ddd; padding: 4px 0; color: #2c2c2e;">
-              <span>📅 <b>${fechaCorta}</b> (${r.raciones}r / ${r.insulinaInyectada}U / ${r.tipoAbsorcion || 'Lenta'}${insCorr}):</span>
-              <span style="font-family: monospace; font-weight: bold; color: #007aff;">${g1} | ${g2} | ${g3} | ${g4}</span>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px dotted #ddd; padding: 6px 0; color: #2c2c2e;">
+              <span>📅 <b>${fechaCorta}</b> (${r.raciones}r / ${r.insulinaInyectada}U / ${r.tipoAbsorcion || 'Absorción Lenta'}${tieneCorrectora}):</span>
+              <span style="font-family: monospace; font-weight: bold; color: var(--primary);">${g1} | ${g2} | ${g3} | ${g4}</span>
             </div>`;
         });
       } else {
-        lineasHistorial = `<div style="font-size: 12px; color: #8e8e93; font-style: italic;">Sin registros postprandiales aún.</div>`;
+        lineasHistorial = `<div style="font-size: 12px; color: var(--text-muted); font-style: italic;">Sin registros postprandiales aún.</div>`;
       }
 
       const div = document.createElement("div");
       div.className = "alimento-item";
       div.innerHTML = `
         <div class="alimento-header"><strong>${alimento.nombre}</strong><span class="badge">${alimento.categoria}</span></div>
-        <div style="margin-top: 5px;">
+        <div style="margin-top: 6px;">
           <span class="badge absorcion">⏳ Abs. ${alimento.absorcion}</span>
           <span class="badge" style="background:#fff3cd; color:#664d03;">🍞 ${alimento.carbosHabituales} Raciones</span>
         </div>
-        ${alimento.notas ? `<p style="font-size:13px; margin:6px 0; color:#555; font-style:italic;">📌 ${alimento.notas}</p>` : ''}
-        <div class="stats-grid" style="border-top:1px dashed #eee; margin-top:8px; padding-top:8px; grid-template-columns: 1fr 1fr;">
+        ${alimento.notas ? `<p style="font-size:13px; margin:8px 0; color:#555; font-style:italic;">📌 ${alimento.notas}</p>` : ''}
+        <div class="stats-grid" style="border-top:1px dashed #eee; margin-top:10px; padding-top:10px; grid-template-columns: 1fr 1fr;">
           <div>🔄 Consumido: ${stats ? stats.veces : 0} vec</div>
           <div>🍞 Rac Media: ${stats ? stats.racionesMedia : '--'}</div>
           <div>💉 Insulina M: ${stats ? stats.insulinaMedia+'U' : '--'}</div>
         </div>
-        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #eee;">
-          <h5 style="margin: 0 0 6px 0; font-size: 11px; color: #8e8e93; text-transform: uppercase;">⏱️ Historial Postprandial (+1h a +4h):</h5>
+        <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid #eee;">
+          <h5 style="margin: 0 0 6px 0; font-size: 11px; color: var(--text-muted); text-transform: uppercase;">⏱️ Historial Postprandial (+1h a +4h):</h5>
           <div style="max-height: 120px; overflow-y: auto;">${lineasHistorial}</div>
         </div>
       `;
@@ -517,6 +574,7 @@
     const stats = obtenerEstadisticasAlimento(id);
     if(stats) {
       panel.style.display = "grid";
+      /* Caja estética usando el icono del pan solicitado para la media de raciones */
       panel.innerHTML = `<div>🔄 Veces: ${stats.veces}</div><div>🍞 Rac M: ${stats.racionesMedia}</div><div>💉 Insulina M: ${stats.insulinaMedia}U</div><div>⏱️ Hist: ${stats.g1m}|${stats.g2m}|${stats.g3m}|${stats.g4m}</div>`;
     } else {
       panel.style.display = "block"; panel.innerHTML = "✨ Primera vez que registras este alimento.";
@@ -530,7 +588,7 @@
     const insulinaInyectada = document.getElementById("reg-insulina-inyectada").value;
     const tipoAbsorcion = document.getElementById("reg-tipo-absorcion").value;
     
-    if(!alimentoId || !glucemiaPre || !raciones || !insulinaInyectada) return alert("Rellena los campos obligatorios.");
+    if(!alimentoId || !glucemiaPre || !raciones || !insulinaInyectada) return alert("Por favor, rellena todos los campos obligatorios (*).");
 
     const nuevoRegistro = {
       id: Date.now().toString(), alimentoId, fecha: new Date().toLocaleString(), timestamp: Date.now(),
@@ -583,11 +641,11 @@
     platoConstruido.forEach((item, index) => {
       totalHc += item.hcCalculados;
       if(item.absorcion === "Lenta/Grasas") tieneLenta = true;
-      lista.innerHTML += `<li>${item.nombre} (x${item.multiplicador}) ➡️ ${(item.hcCalculados).toFixed(1)} raciones <button onclick="eliminarDeCalculadora(${index})" style="width:auto; padding:2px 6px; background:red; font-size:10px; margin-left:10px;">X</button></li>`;
+      lista.innerHTML += `<style>#btn-del-${index} { width:auto; padding:3px 8px; background:#ff3b30; font-size:11px; margin-left:8px; border-radius:12px; box-shadow:none; }</style><li>${item.nombre} (x${item.multiplicador}) ➡️ ${(item.hcCalculados).toFixed(1)} raciones <button id="btn-del-${index}" onclick="eliminarDeCalculadora(${index})">X</button></li>`;
     });
 
     document.getElementById("calcu-total-hc").innerText = totalHc.toFixed(1);
-    document.getElementById("calcu-absorcion-sugerida").innerText = tieneLenta ? "Lenta (Se sugiere Absorción Lenta)" : "Media/Rápida (Absorción Rápida)";
+    document.getElementById("calcu-absorcion-sugerida").innerText = tieneLenta ? "Lenta (Se sugiere Absorción Lenta o Doble Pico)" : "Rápida (Absorción Rápida)";
   }
 
   function eliminarDeCalculadora(index) {
@@ -637,7 +695,7 @@
     const filtrados = registros.filter(r => r.alimentoId === id);
 
     if(filtrados.length === 0) {
-      contenedor.innerHTML = "<div class='card'>💡 <b>Sin histórico:</b> Aún no hay datos de inyecciones para este alimento. Registra comidas para activar la inteligencia.</div>";
+      contenedor.innerHTML = "<div class='card'>💡 <b>Sin histórico:</b> Aún no hay datos de inyecciones para este alimento. Registra comidas para activar la pauta óptima.</div>";
       return;
     }
 
@@ -653,13 +711,13 @@
 
     if(mejorRegistro) {
       contenedor.innerHTML = `
-        <div class="card" style="background:#e3f2fd; border-left:4px solid #007aff;">
-          <h4>💡 Patrón de Éxito Encontrado</h4>
+        <div class="card" style="background: var(--primary-light); border-left:4px solid var(--primary);">
+          <h4 style="color: var(--primary-dark)">💡 Patrón de Éxito Encontrado</h4>
           <p>Has consumido este alimento <b>${filtrados.length} veces</b>. Tu respuesta glucémica más estable fue con la siguiente pauta:</p>
           <ul>
             <li><b>Raciones reales:</b> ${mejorRegistro.raciones} HC</li>
             <li><b>Dosis aplicada:</b> ${mejorRegistro.insulinaInyectada} Unidades</li>
-            <li><b>Tipo absorción:</b> ${mejorRegistro.tipoAbsorcion || 'Absorción Lenta'}</li>
+            <li><b>Estrategia:</b> ${mejorRegistro.tipoAbsorcion || 'Absorción Lenta'}</li>
             <li><b>Glucemia previa:</b> ${mejorRegistro.glucemiaPre} mg/dL</li>
           </ul>
           <p style="font-size:12px; color:#555; font-style:italic;">Resultados de ese día: +1h: ${mejorRegistro.g1 || '--'} | +2h: ${mejorRegistro.g2} | +3h: ${mejorRegistro.g3 || '--'} | +4h: ${mejorRegistro.g4} mg/dL.</p>
@@ -695,22 +753,22 @@
           <div class="grid-pendientes">
             <div class="col-pendiente">
               <b>+1h</b>
-              <input type="number" id="g1-${p.id}" value="${p.g1||''}" placeholder="mgdL" onchange="actualizarHoraPost('${p.id}', 1)">
+              <input type="number" id="g1-${p.id}" value="${p.g1||''}" placeholder="mg/dL" onchange="actualizarHoraPost('${p.id}', 1)">
               <input type="number" id="i1-${p.id}" value="${p.i1||''}" placeholder="+Ins" step="0.5" style="border-color:#ff3b30;" onchange="actualizarInsulinaPost('${p.id}', 1)">
             </div>
             <div class="col-pendiente">
               <b>+2h</b>
-              <input type="number" id="g2-${p.id}" value="${p.g2||''}" placeholder="mgdL" onchange="actualizarHoraPost('${p.id}', 2)">
+              <input type="number" id="g2-${p.id}" value="${p.g2||''}" placeholder="mg/dL" onchange="actualizarHoraPost('${p.id}', 2)">
               <input type="number" id="i2-${p.id}" value="${p.i2||''}" placeholder="+Ins" step="0.5" style="border-color:#ff3b30;" onchange="actualizarInsulinaPost('${p.id}', 2)">
             </div>
             <div class="col-pendiente">
               <b>+3h</b>
-              <input type="number" id="g3-${p.id}" value="${p.g3||''}" placeholder="mgdL" onchange="actualizarHoraPost('${p.id}', 3)">
+              <input type="number" id="g3-${p.id}" value="${p.g3||''}" placeholder="mg/dL" onchange="actualizarHoraPost('${p.id}', 3)">
               <input type="number" id="i3-${p.id}" value="${p.i3||''}" placeholder="+Ins" step="0.5" style="border-color:#ff3b30;" onchange="actualizarInsulinaPost('${p.id}', 3)">
             </div>
             <div class="col-pendiente">
               <b>+4h</b>
-              <input type="number" id="g4-${p.id}" value="${p.g4||''}" placeholder="mgdL" onchange="actualizarHoraPost('${p.id}', 4)">
+              <input type="number" id="g4-${p.id}" value="${p.g4||''}" placeholder="mg/dL" onchange="actualizarHoraPost('${p.id}', 4)">
               <input type="number" id="i4-${p.id}" value="${p.i4||''}" placeholder="+Ins" step="0.5" style="border-color:#ff3b30;" onchange="actualizarInsulinaPost('${p.id}', 4)">
             </div>
           </div>
