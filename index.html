@@ -416,33 +416,68 @@
   }
 
   function renderizarBiblioteca() {
-    const alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
-    const filtro = document.getElementById("buscador-bib").value.toLowerCase();
-    const contenedor = document.getElementById("lista-alimentos");
-    contenedor.innerHTML = "";
+  const alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
+  const registros = JSON.parse(localStorage.getItem("db_registros")) || [];
+  const filtro = document.getElementById("buscador-bib").value.toLowerCase();
+  const contenedor = document.getElementById("lista-alimentos");
+  contenedor.innerHTML = "";
 
-    alimentos.filter(a => a.nombre.toLowerCase().includes(filtro)).forEach(alimento => {
-      const stats = obtenerEstadisticasAlimento(alimento.id);
-      const div = document.createElement("div");
-      div.className = "alimento-item";
-      div.innerHTML = `
-        <div class="alimento-header"><strong>${alimento.nombre}</strong><span class="badge">${alimento.categoria}</span></div>
-        <div style="margin-top: 5px;">
-          <span class="badge absorcion">⏳ Abs. ${alimento.absorcion}</span>
-          <span class="badge" style="background:#fff3cd; color:#664d03;">🍞 ${alimento.carbosHabituales} Raciones</span>
+  alimentos.filter(a => a.nombre.toLowerCase().includes(filtro)).forEach(alimento => {
+    const stats = obtenerEstadisticasAlimento(alimento.id);
+    
+    // Filtramos todos los registros reales de este alimento concreto para listar su historial
+    const historialFiltrado = registros.filter(r => r.alimentoId === alimento.id);
+    
+    // Construimos las líneas del historial (una línea por cada día consumido)
+    let lineasHistorial = "";
+    if (historialFiltrado.length > 0) {
+      historialFiltrado.forEach(r => {
+        const g1 = r.g1 || '--';
+        const g2 = r.g2 || '--';
+        const g3 = r.g3 || '--';
+        const g4 = r.g4 || '--';
+        // Extraemos solo el día y mes de la fecha para que no ocupe demasiado espacio en la pantalla del iPhone
+        const fechaCorta = r.fecha ? r.fecha.split(',')[0] : 'S/F';
+        
+        lineasHistorial += `
+          <div style="display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px dotted #ddd; padding: 4px 0; color: #2c2c2e;">
+            <span>📅 <b>${fechaCorta}</b> (${r.raciones} r / ${r.insulinaInyectada}U ${r.tipoBolo}):</span>
+            <span style="font-family: monospace; font-weight: bold; color: #007aff;">${g1} | ${g2} | ${g3} | ${g4}</span>
+          </div>
+        `;
+      });
+    } else {
+      lineasHistorial = `<div style="font-size: 12px; color: #8e8e93; font-style: italic;">Sin registros postprandiales aún.</div>`;
+    }
+
+    const div = document.createElement("div");
+    div.className = "alimento-item";
+    div.innerHTML = `
+      <div class="alimento-header"><strong>${alimento.nombre}</strong><span class="badge">${alimento.categoria}</span></div>
+      <div style="margin-top: 5px;">
+        <span class="badge absorcion">⏳ Abs. ${alimento.absorcion}</span>
+        <span class="badge" style="background:#fff3cd; color:#664d03;">🍞 ${alimento.carbosHabituales} Raciones</span>
+      </div>
+      ${alimento.notas ? `<p style="font-size:13px; margin:6px 0; color:#555; font-style:italic;">📌 ${alimento.notas}</p>` : ''}
+      
+      <div class="stats-grid" style="border-top:1px dashed #eee; margin-top:8px; padding-top:8px; grid-template-columns: 1fr 1fr;">
+        <div>🔄 Consumido: ${stats ? stats.veces : 0} vec</div>
+        <div>🩸 Pre Media: ${stats ? stats.glucemiaPreMedia : '--'} mg/dL</div>
+        <div>💉 Bolo habitual: ${stats ? stats.boloComun : '--'}</div>
+        <div>💉 Insulina Media: ${stats ? stats.insulinaMedia+'U' : '--'}</div>
+      </div>
+
+      <!-- Nueva sección dinámica con el listado de todas las glucemias postprandiales día por día -->
+      <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #eee;">
+        <h5 style="margin: 0 0 6px 0; font-size: 11px; color: #8e8e93; text-transform: uppercase;">⏱️ Historial Postprandial (+1h a +4h):</h5>
+        <div style="max-height: 120px; overflow-y: auto;">
+          ${lineasHistorial}
         </div>
-        ${alimento.notas ? `<p style="font-size:13px; margin:6px 0; color:#555; font-style:italic;">📌 ${alimento.notas}</p>` : ''}
-        <div class="stats-grid" style="border-top:1px dashed #eee; margin-top:8px; padding-top:8px;">
-          <div>🔄 Consumido: ${stats ? stats.veces : 0} vec</div>
-          <div>🩸 Pre Media: ${stats ? stats.glucemiaPreMedia : '--'}</div>
-          <div>💉 Bolo: ${stats ? stats.boloComun : '--'}</div>
-          <div>💉 Insulina M: ${stats ? stats.insulinaMedia+'U' : '--'}</div>
-          <div style="grid-column: span 2;">⏳ Glucemias Post (+1h a +4h): <b>${stats ? `${stats.g1m}|${stats.g2m}|${stats.g3m}|${stats.g4m}` : '--|--|--|--'}</b></div>
-        </div>
-      `;
-      contenedor.appendChild(div);
-    });
-  }
+      </div>
+    `;
+    contenedor.appendChild(div);
+  });
+}
 
   function poblarTodosLosSelectores() {
     const alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
