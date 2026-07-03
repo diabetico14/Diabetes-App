@@ -236,6 +236,9 @@
 
 <div class="app-container">
 
+  <!-- ========================================== -->
+  <!-- TAB: INICIO -->
+  <!-- ========================================== -->
   <section id="tab-inicio" class="tab-content active">
     <h2>Inicio 🏠</h2>
     
@@ -245,27 +248,31 @@
     </div>
 
     <div class="card">
-      <h4 style="color:#ff9500;">Registros pendientes (+1h a +4h)</h4>
+      <h4>Registros pendientes (+1h a +4h)</h4>
       <div id="inicio-pendientes">No tienes mediciones postprandiales pendientes de las últimas 5 horas.</div>
     </div>
   </section>
 
+  <!-- ========================================== -->
+  <!-- TAB: REGISTRO -->
+  <!-- ========================================== -->
   <section id="tab-registro" class="tab-content">
     <h2>Registrar Comida 📝</h2>
     
     <div class="card">
       <div class="form-group">
-        <label>1. Selecciona el alimento/plato:<span class="obligatorio">*</span></label>
+        <label>1. Selecciona el alimento/plato:</label>
         <select id="reg-alimento-id" onchange="actualizarPrevisualizacionHistorica()">
-          </select>
+          <!-- Se puebla automáticamente -->
+        </select>
       </div>
 
-      <div id="previsualizacion-historica" class="stats-grid card" style="display:none; background:#f8f9fa; margin-bottom:14px; padding:12px; border: 1px solid #e5e5ea;"></div>
+      <div id="previsualizacion-historica" class="stats-grid card" style="display:none; background:#f2f2f7; margin-bottom:12px; padding:10px;"></div>
       
-      <h3 style="color: var(--primary);">✨ ANTES DE COMER</h3>
+      <h3 style="font-size:14px; color:#007aff; margin-top:15px; margin-bottom:10px;">✨ ANTES DE COMER</h3>
 
       <div class="form-group">
-        <label>Glucemia actual (mg/dL):<span class="obligatorio">*</span></label>
+        <label>Glucemia actual (mg/dL):</label>
         <input type="number" id="reg-glucemia-pre" placeholder="Ej: 110">
       </div>
 
@@ -282,24 +289,23 @@
         </select>
       </div>
 
-      <h3 style="color: #34c759;">🍔 COMIDA Y DOSIS</h3>
+      <h3 style="font-size:14px; color:#34c759; margin-top:15px; margin-bottom:10px;">🍔 COMIDA Y DOSIS</h3>
 
       <div class="form-group">
-        <label>Raciones de HC reales:<span class="obligatorio">*</span></label>
+        <label>Raciones de HC reales:</label>
         <input type="number" id="reg-raciones" placeholder="Ej: 6" step="0.1">
       </div>
       
       <div class="form-group">
-        <label>Insulina Inyectada (U):<span class="obligatorio">*</span></label>
+        <label>Insulina Inyectada (U):</label>
         <input type="number" id="reg-insulina-inyectada" placeholder="Introduce unidades" step="0.5">
       </div>
       
       <div class="form-group">
-        <label>Tipo de absorción:</label>
-        <select id="reg-tipo-absorcion">
-          <option value="Absorción Rápida">Absorción Rápida</option>
-          <option value="Absorción Lenta" selected>Absorción Lenta</option>
-          <option value="Doble Pico">Doble Pico</option>
+        <label>Tipo de Bolo:</label>
+        <select id="reg-tipo-bolo">
+          <option value="Normal">Normal</option>
+          <option value="Dual">Dual</option>
         </select>
       </div>
 
@@ -312,10 +318,62 @@
     </div>
   </section>
 
+  <!-- ========================================== -->
+  <!-- TAB: CALCULADORA -->
+  <!-- ========================================== -->
+  <section id="tab-calculadora" class="tab-content">
+    <h2>Calculadora 🧮</h2>
+    <div class="card">
+      <label>Añadir alimento al plato:</label>
+      <select id="calcu-alimento-id">
+        <!-- Se puebla automáticamente -->
+      </select>
+      <div class="form-group" style="margin-top:10px;">
+        <label>Multiplicador de raciones (Ej: 1 si es tu ración habitual, 2 si es el doble):</label>
+        <input type="number" id="calcu-multiplicador" value="1" step="0.1">
+      </div>
+      <button onclick="agregarALaCalculadora()" style="background:#5856d6;">➕ Añadir al plato</button>
+    </div>
+
+    <div class="card">
+      <h4>Plato actual construido:</h4>
+      <ul id="calcu-lista-items" style="padding-left:20px; font-size:14px; margin-bottom:15px;">
+        <li>El plato está vacío</li>
+      </ul>
+      <hr style="border:0; border-top:1px solid #eee; margin-bottom:10px;">
+      <p><b>Total Raciones Estimadas:</b> <span id="calcu-total-hc">0</span> raciones</p>
+      <p><b>Absorción combinada sugerida:</b> <span id="calcu-absorcion-sugerida" style="color:var(--primary); font-weight:bold;">--</span></p>
+      
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;">
+        <button onclick="volcarCalculadoraARegistro()">📝 Volcar a registro</button>
+        <button onclick="guardarComboComoPlatoHabitual()" style="background:#34c759;">💾 Guardar como plato habitual</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- TAB: RECOMENDACIONES -->
+  <!-- ========================================== -->
+  <section id="tab-recomendaciones" class="tab-content">
+    <h2>Recomendaciones 💡</h2>
+    <div class="card">
+      <label>Selecciona un alimento para analizar tu histórico:</label>
+      <select id="rec-alimento-id" onchange="generarRecomendacionInteligente()">
+        <!-- Se puebla automáticamente -->
+      </select>
+    </div>
+    <div id="rec-resultado">
+      <p style="text-align:center; color:#8e8e93;">Selecciona un alimento de la lista para activar el módulo inteligente.</p>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- TAB: BIBLIOTECA -->
+  <!-- ========================================== -->
   <section id="tab-biblioteca" class="tab-content">
     <h2>Biblioteca 📚</h2>
     
-    <details class="card" style="margin-bottom:15px; border-color: var(--primary);">
+    <details class="card" style="margin-bottom:15px;">
       <summary style="font-weight:bold; cursor:pointer; color:var(--primary);">▶ ➕ Añadir nuevo elemento</summary>
       <div style="margin-top:15px;">
         <div class="form-group">
@@ -351,50 +409,16 @@
     </div>
 
     <div id="lista-alimentos">
-      </div>
-  </section>
-
-  <section id="tab-calculadora" class="tab-content">
-    <h2>Calculadora 🧮</h2>
-    <div class="card">
-      <label>Añadir alimento al plato:</label>
-      <select id="calcu-alimento-id">
-        </select>
-      <div class="form-group" style="margin-top:10px;">
-        <label>Multiplicador de raciones:</label>
-        <input type="number" id="calcu-multiplicador" value="1" step="0.1">
-      </div>
-      <button onclick="agregarALaCalculadora()" style="background:#5856d6; box-shadow: 0 4px 8px rgba(88, 86, 214, 0.2);">➕ Añadir al plato</button>
-    </div>
-
-    <div class="card">
-      <h4>Plato actual construido:</h4>
-      <ul id="calcu-lista-items" style="padding-left:20px; font-size:14px; margin-bottom:15px;">
-        <li>El plato está vacío</li>
-      </ul>
-      <hr style="border:0; border-top:1px solid var(--border-color); margin-bottom:10px;">
-      <p><b>Total Raciones Estimadas:</b> <span id="calcu-total-hc" style="color:var(--primary); font-weight:bold;">0</span> raciones</p>
-      <p><b>Absorción combinada sugerida:</b> <span id="calcu-absorcion-sugerida" style="color:var(--primary); font-weight:bold;">--</span></p>
-      
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;">
-        <button onclick="volcarCalculadoraARegistro()">📝 Volcar a registro</button>
-        <button onclick="guardarComboComoPlatoHabitual()" style="background:#34c759; box-shadow: 0 4px 8px rgba(52, 199, 89, 0.2);">💾 Guardar como plato</button>
-      </div>
+      <!-- Se renderiza mediante JavaScript -->
     </div>
   </section>
 
-  <section id="tab-recomendaciones" class="tab-content">
-    <h2>Recomendaciones 💡</h2>
-    <div class="card">
-      <label>Selecciona un alimento para analizar tu histórico:</label>
-      <select id="rec-alimento-id" onchange="generarRecomendacionInteligente()">
-        </select>
-    </div>
-    <div id="rec-resultado">
-      <p style="text-align:center; color:var(--text-muted);">Selecciona un alimento de la lista para activar el módulo inteligente.</p>
-    </div>
-  </section>
-
+  <!-- ========================================== -->
+  <!-- BARRA DE NAVEGACIÓN INFERIOR -->
+  <!-- ========================================== -->
+  <!-- ========================================== -->
+  <!-- BARRA DE NAVEGACIÓN INFERIOR -->
+  <!-- ========================================== -->
   <nav class="bottom-nav">
     <button onclick="cambiarTab('inicio')" class="nav-btn active" id="btn-inicio">
       <span>🏠</span>Inicio
@@ -415,6 +439,9 @@
   
 </div>
 
+<!-- ========================================== -->
+<!-- LÓGICA JAVASCRIPT (Todo integrado aquí) -->
+<!-- ========================================== -->
 <script>
   if (!localStorage.getItem("db_alimentos")) localStorage.setItem("db_alimentos", JSON.stringify([]));
   if (!localStorage.getItem("db_registros")) localStorage.setItem("db_registros", JSON.stringify([]));
@@ -465,13 +492,13 @@
     const filtrados = registros.filter(r => r.alimentoId === alimentoId);
     if(filtrados.length === 0) return null;
 
-    let sumaPre = 0, sumaInsulina = 0, sumaRaciones = 0;
+    let sumaPre = 0, sumaInsulina = 0, cBoloNormal = 0, cBoloDual = 0;
     let sumaG1 = 0, sumaG2 = 0, sumaG3 = 0, sumaG4 = 0, c1=0, c2=0, c3=0, c4=0;
 
     filtrados.forEach(r => {
       sumaPre += parseFloat(r.glucemiaPre || 0);
       sumaInsulina += parseFloat(r.insulinaInyectada || 0);
-      sumaRaciones += parseFloat(r.raciones || 0);
+      if(r.tipoBolo === "Dual") cBoloDual++; else cBoloNormal++;
       if(r.g1) { sumaG1 += parseFloat(r.g1); c1++; }
       if(r.g2) { sumaG2 += parseFloat(r.g2); c2++; }
       if(r.g3) { sumaG3 += parseFloat(r.g3); c3++; }
@@ -482,64 +509,75 @@
       veces: filtrados.length,
       glucemiaPreMedia: Math.round(sumaPre / filtrados.length),
       insulinaMedia: (sumaInsulina / filtrados.length).toFixed(1),
-      racionesMedia: (sumaRaciones / filtrados.length).toFixed(1),
+      boloComun: cBoloDual >= cBoloNormal ? "Dual" : "Normal",
       g1m: c1 ? Math.round(sumaG1/c1) : '--', g2m: c2 ? Math.round(sumaG2/c2) : '--',
       g3m: c3 ? Math.round(sumaG3/c3) : '--', g4m: c4 ? Math.round(sumaG4/c4) : '--'
     };
   }
 
   function renderizarBiblioteca() {
-    const alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
-    const registros = JSON.parse(localStorage.getItem("db_registros")) || [];
-    const filtro = document.getElementById("buscador-bib").value.toLowerCase();
-    const contenedor = document.getElementById("lista-alimentos");
-    contenedor.innerHTML = "";
+  const alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
+  const registros = JSON.parse(localStorage.getItem("db_registros")) || [];
+  const filtro = document.getElementById("buscador-bib").value.toLowerCase();
+  const contenedor = document.getElementById("lista-alimentos");
+  contenedor.innerHTML = "";
 
-    alimentos.filter(a => a.nombre.toLowerCase().includes(filtro)).forEach(alimento => {
-      const stats = obtenerEstadisticasAlimento(alimento.id);
-      const historialFiltrado = registros.filter(r => r.alimentoId === alimento.id);
+  alimentos.filter(a => a.nombre.toLowerCase().includes(filtro)).forEach(alimento => {
+    const stats = obtenerEstadisticasAlimento(alimento.id);
+    
+    // Filtramos todos los registros reales de este alimento concreto para listar su historial
+    const historialFiltrado = registros.filter(r => r.alimentoId === alimento.id);
+    
+    // Construimos las líneas del historial (una línea por cada día consumido)
+    let lineasHistorial = "";
+    if (historialFiltrado.length > 0) {
+      historialFiltrado.forEach(r => {
+        const g1 = r.g1 || '--';
+        const g2 = r.g2 || '--';
+        const g3 = r.g3 || '--';
+        const g4 = r.g4 || '--';
+        // Extraemos solo el día y mes de la fecha para que no ocupe demasiado espacio en la pantalla del iPhone
+        const fechaCorta = r.fecha ? r.fecha.split(',')[0] : 'S/F';
+        
+        lineasHistorial += `
+          <div style="display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px dotted #ddd; padding: 4px 0; color: #2c2c2e;">
+            <span>📅 <b>${fechaCorta}</b> (${r.raciones} r / ${r.insulinaInyectada}U ${r.tipoBolo}):</span>
+            <span style="font-family: monospace; font-weight: bold; color: #007aff;">${g1} | ${g2} | ${g3} | ${g4}</span>
+          </div>
+        `;
+      });
+    } else {
+      lineasHistorial = `<div style="font-size: 12px; color: #8e8e93; font-style: italic;">Sin registros postprandiales aún.</div>`;
+    }
+
+    const div = document.createElement("div");
+    div.className = "alimento-item";
+    div.innerHTML = `
+      <div class="alimento-header"><strong>${alimento.nombre}</strong><span class="badge">${alimento.categoria}</span></div>
+      <div style="margin-top: 5px;">
+        <span class="badge absorcion">⏳ Abs. ${alimento.absorcion}</span>
+        <span class="badge" style="background:#fff3cd; color:#664d03;">🍞 ${alimento.carbosHabituales} Raciones</span>
+      </div>
+      ${alimento.notas ? `<p style="font-size:13px; margin:6px 0; color:#555; font-style:italic;">📌 ${alimento.notas}</p>` : ''}
       
-      let lineasHistorial = "";
-      if (historialFiltrado.length > 0) {
-        historialFiltrado.forEach(r => {
-          const g1 = r.g1 || '--'; const g2 = r.g2 || '--'; const g3 = r.g3 || '--'; const g4 = r.g4 || '--';
-          
-          // Verificar si hubo alguna dosis correctora inyectada a posteriori
-          const tieneCorrectora = (r.i1 || r.i2 || r.i3 || r.i4) ? ` (+Corr)` : '';
-          const fechaCorta = r.fecha ? r.fecha.split(',')[0] : 'S/F';
-          
-          lineasHistorial += `
-            <div style="display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px dotted #ddd; padding: 6px 0; color: #2c2c2e;">
-              <span>📅 <b>${fechaCorta}</b> (${r.raciones}r / ${r.insulinaInyectada}U / ${r.tipoAbsorcion || 'Absorción Lenta'}${tieneCorrectora}):</span>
-              <span style="font-family: monospace; font-weight: bold; color: var(--primary);">${g1} | ${g2} | ${g3} | ${g4}</span>
-            </div>`;
-        });
-      } else {
-        lineasHistorial = `<div style="font-size: 12px; color: var(--text-muted); font-style: italic;">Sin registros postprandiales aún.</div>`;
-      }
+      <div class="stats-grid" style="border-top:1px dashed #eee; margin-top:8px; padding-top:8px; grid-template-columns: 1fr 1fr;">
+        <div>🔄 Consumido: ${stats ? stats.veces : 0} vec</div>
+        <div>🩸 Pre Media: ${stats ? stats.glucemiaPreMedia : '--'} mg/dL</div>
+        <div>💉 Bolo habitual: ${stats ? stats.boloComun : '--'}</div>
+        <div>💉 Insulina Media: ${stats ? stats.insulinaMedia+'U' : '--'}</div>
+      </div>
 
-      const div = document.createElement("div");
-      div.className = "alimento-item";
-      div.innerHTML = `
-        <div class="alimento-header"><strong>${alimento.nombre}</strong><span class="badge">${alimento.categoria}</span></div>
-        <div style="margin-top: 6px;">
-          <span class="badge absorcion">⏳ Abs. ${alimento.absorcion}</span>
-          <span class="badge" style="background:#fff3cd; color:#664d03;">🍞 ${alimento.carbosHabituales} Raciones</span>
+      <!-- Nueva sección dinámica con el listado de todas las glucemias postprandiales día por día -->
+      <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #eee;">
+        <h5 style="margin: 0 0 6px 0; font-size: 11px; color: #8e8e93; text-transform: uppercase;">⏱️ Historial Postprandial (+1h a +4h):</h5>
+        <div style="max-height: 120px; overflow-y: auto;">
+          ${lineasHistorial}
         </div>
-        ${alimento.notas ? `<p style="font-size:13px; margin:8px 0; color:#555; font-style:italic;">📌 ${alimento.notas}</p>` : ''}
-        <div class="stats-grid" style="border-top:1px dashed #eee; margin-top:10px; padding-top:10px; grid-template-columns: 1fr 1fr;">
-          <div>🔄 Consumido: ${stats ? stats.veces : 0} vec</div>
-          <div>🍞 Rac Media: ${stats ? stats.racionesMedia : '--'}</div>
-          <div>💉 Insulina M: ${stats ? stats.insulinaMedia+'U' : '--'}</div>
-        </div>
-        <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid #eee;">
-          <h5 style="margin: 0 0 6px 0; font-size: 11px; color: var(--text-muted); text-transform: uppercase;">⏱️ Historial Postprandial (+1h a +4h):</h5>
-          <div style="max-height: 120px; overflow-y: auto;">${lineasHistorial}</div>
-        </div>
-      `;
-      contenedor.appendChild(div);
-    });
-  }
+      </div>
+    `;
+    contenedor.appendChild(div);
+  });
+}
 
   function poblarTodosLosSelectores() {
     const alimentos = JSON.parse(localStorage.getItem("db_alimentos"));
@@ -558,45 +596,47 @@
   }
 
   function actualizarPrevisualizacionHistorica() {
-    const id = document.getElementById("reg-alimento-id").value;
-    const panel = document.getElementById("previsualizacion-historica");
-    const inputRaciones = document.getElementById("reg-raciones");
-    
-    if(!id) { panel.style.display = "none"; return; }
-    
-    const alimentos = JSON.parse(localStorage.getItem("db_alimentos")) || [];
-    const alimentoEncontrado = alimentos.find(a => a.id === id);
-    
-    if (alimentoEncontrado) {
-      inputRaciones.value = alimentoEncontrado.carbosHabituales;
-    }
-    
-    const stats = obtenerEstadisticasAlimento(id);
-    if(stats) {
-      panel.style.display = "grid";
-      /* Caja estética usando el icono del pan solicitado para la media de raciones */
-      panel.innerHTML = `<div>🔄 Veces: ${stats.veces}</div><div>🍞 Rac M: ${stats.racionesMedia}</div><div>💉 Insulina M: ${stats.insulinaMedia}U</div><div>⏱️ Hist: ${stats.g1m}|${stats.g2m}|${stats.g3m}|${stats.g4m}</div>`;
-    } else {
-      panel.style.display = "block"; panel.innerHTML = "✨ Primera vez que registras este alimento.";
-    }
+  const id = document.getElementById("reg-alimento-id").value;
+  const panel = document.getElementById("previsualizacion-historica");
+  const inputRaciones = document.getElementById("reg-raciones");
+  
+  if(!id) { 
+    panel.style.display = "none"; 
+    return; 
   }
+  
+  // Buscamos el alimento en la biblioteca para conocer sus raciones habituales
+  const alimentos = JSON.parse(localStorage.getItem("db_alimentos")) || [];
+  const alimentoEncontrado = alimentos.find(a => a.id === id);
+  
+  if (alimentoEncontrado) {
+    // Rellenamos por defecto la casilla con las raciones de la biblioteca
+    inputRaciones.value = alimentoEncontrado.carbosHabituales;
+  }
+  
+  const stats = obtenerEstadisticasAlimento(id);
+  if(stats) {
+    panel.style.display = "grid";
+    panel.innerHTML = `<div>🔄 Veces: ${stats.veces}</div><div>🩸 Pre M: ${stats.glucemiaPreMedia}</div><div>💉 Insulina M: ${stats.insulinaMedia}U</div><div>⏱️ Hist: ${stats.g1m}|${stats.g2m}|${stats.g3m}|${stats.g4m}</div>`;
+  } else {
+    panel.style.display = "block"; panel.innerHTML = "✨ Primera vez que registras este alimento.";
+  }
+}
 
   function guardarRegistroComida() {
     const alimentoId = document.getElementById("reg-alimento-id").value;
     const glucemiaPre = document.getElementById("reg-glucemia-pre").value;
     const raciones = document.getElementById("reg-raciones").value;
     const insulinaInyectada = document.getElementById("reg-insulina-inyectada").value;
-    const tipoAbsorcion = document.getElementById("reg-tipo-absorcion").value;
+    const tipoBolo = document.getElementById("reg-tipo-bolo").value;
     
-    if(!alimentoId || !glucemiaPre || !raciones || !insulinaInyectada) return alert("Por favor, rellena todos los campos obligatorios (*).");
+    if(!alimentoId || !glucemiaPre || !raciones || !insulinaInyectada) return alert("Rellena los campos obligatorios.");
 
     const nuevoRegistro = {
       id: Date.now().toString(), alimentoId, fecha: new Date().toLocaleString(), timestamp: Date.now(),
       glucemiaPre, insulinaActiva: document.getElementById("reg-insulina-activa").value,
-      deportePrevio: document.getElementById("reg-deporte-previo").value, raciones, insulinaInyectada, tipoAbsorcion,
-      comentarios: document.getElementById("reg-comentarios").value, 
-      g1: null, g2: null, g3: null, g4: null,
-      i1: null, i2: null, i3: null, i4: null
+      deportePrevio: document.getElementById("reg-deporte-previo").value, raciones, insulinaInyectada, tipoBolo,
+      comentarios: document.getElementById("reg-comentarios").value, g1: null, g2: null, g3: null, g4: null
     };
 
     let registros = JSON.parse(localStorage.getItem("db_registros"));
@@ -641,11 +681,11 @@
     platoConstruido.forEach((item, index) => {
       totalHc += item.hcCalculados;
       if(item.absorcion === "Lenta/Grasas") tieneLenta = true;
-      lista.innerHTML += `<style>#btn-del-${index} { width:auto; padding:3px 8px; background:#ff3b30; font-size:11px; margin-left:8px; border-radius:12px; box-shadow:none; }</style><li>${item.nombre} (x${item.multiplicador}) ➡️ ${(item.hcCalculados).toFixed(1)} raciones <button id="btn-del-${index}" onclick="eliminarDeCalculadora(${index})">X</button></li>`;
+      lista.innerHTML += `<li>${item.nombre} (x${item.multiplicador}) ➡️ ${(item.hcCalculados).toFixed(1)} raciones <button onclick="eliminarDeCalculadora(${index})" style="width:auto; padding:2px 6px; background:red; font-size:10px; margin-left:10px;">X</button></li>`;
     });
 
     document.getElementById("calcu-total-hc").innerText = totalHc.toFixed(1);
-    document.getElementById("calcu-absorcion-sugerida").innerText = tieneLenta ? "Lenta (Se sugiere Absorción Lenta o Doble Pico)" : "Rápida (Absorción Rápida)";
+    document.getElementById("calcu-absorcion-sugerida").innerText = tieneLenta ? "Lenta (Sugerido Bolo Dual)" : "Media/Rápida (Bolo Normal)";
   }
 
   function eliminarDeCalculadora(index) {
@@ -695,7 +735,7 @@
     const filtrados = registros.filter(r => r.alimentoId === id);
 
     if(filtrados.length === 0) {
-      contenedor.innerHTML = "<div class='card'>💡 <b>Sin histórico:</b> Aún no hay datos de inyecciones para este alimento. Registra comidas para activar la pauta óptima.</div>";
+      contenedor.innerHTML = "<div class='card'>💡 <b>Sin histórico:</b> Aún no hay datos de inyecciones para este alimento. Registra comidas para activar la inteligencia.</div>";
       return;
     }
 
@@ -711,17 +751,18 @@
 
     if(mejorRegistro) {
       contenedor.innerHTML = `
-        <div class="card" style="background: var(--primary-light); border-left:4px solid var(--primary);">
-          <h4 style="color: var(--primary-dark)">💡 Patrón de Éxito Encontrado</h4>
+        <div class="card" style="background:#e3f2fd; border-left:4px solid #007aff;">
+          <h4>💡 Patrón de Éxito Encontrado</h4>
           <p>Has consumido este alimento <b>${filtrados.length} veces</b>. Tu respuesta glucémica más estable fue con la siguiente pauta:</p>
           <ul>
             <li><b>Raciones reales:</b> ${mejorRegistro.raciones} HC</li>
             <li><b>Dosis aplicada:</b> ${mejorRegistro.insulinaInyectada} Unidades</li>
-            <li><b>Estrategia:</b> ${mejorRegistro.tipoAbsorcion || 'Absorción Lenta'}</li>
+            <li><b>Estrategia de bolo:</b> Bolo ${mejorRegistro.tipoBolo}</li>
             <li><b>Glucemia previa:</b> ${mejorRegistro.glucemiaPre} mg/dL</li>
           </ul>
           <p style="font-size:12px; color:#555; font-style:italic;">Resultados de ese día: +1h: ${mejorRegistro.g1 || '--'} | +2h: ${mejorRegistro.g2} | +3h: ${mejorRegistro.g3 || '--'} | +4h: ${mejorRegistro.g4} mg/dL.</p>
-        </div>`;
+        </div>
+      `;
     } else {
       contenedor.innerHTML = `<div class='card'>💡 El alimento se ha registrado <b>${filtrados.length} veces</b>, pero necesitas completar las glucemias de <b>+2h y +4h</b> en el Inicio para que el algoritmo pueda darte la pauta óptima exacta.</div>`;
     }
@@ -734,7 +775,7 @@
     const ultCard = document.getElementById("inicio-ultimo");
     if(registros.length > 0) {
       const ult = registros[0]; const al = alimentos.find(a => a.id === ult.alimentoId);
-      ultCard.innerHTML = `<b>${ult.fecha}</b><br>🍔 ${al ? al.nombre : 'Plato combinado'} (${ult.raciones} raciones)<br>🩸 Previa: ${ult.glucemiaPre} mg/dL | 💉 ${ult.insulinaInyectada}U (${ult.tipoAbsorcion || 'Absorción Lenta'})`;
+      ultCard.innerHTML = `<b>${ult.fecha}</b><br>🍔 ${al ? al.nombre : 'Plato combinado'} (${ult.raciones} raciones)<br>🩸 Previa: ${ult.glucemiaPre} mg/dL | 💉 ${ult.insulinaInyectada}U (${ult.tipoBolo})`;
     } else {
       ultCard.innerHTML = "Aún no has registrado ninguna comida.";
     }
@@ -747,30 +788,14 @@
       pendientes.forEach(p => {
         const al = alimentos.find(a => a.id === p.alimentoId);
         const div = document.createElement("div");
-        div.className = "card"; div.style = "background:#fff; border:1px solid #ff9500; margin-top:8px; font-size:14px; padding:12px;";
+        div.className = "card"; div.style = "background:#fff; border:1px solid #ff9500; margin-top:8px; font-size:14px; padding:10px;";
         div.innerHTML = `
-          <strong>${al ? al.nombre : 'Plato Combinado'}</strong> <span style="font-size:11px; color:#666; float:right;">${p.fecha.split(',')[1] || ''}</span>
-          <div class="grid-pendientes">
-            <div class="col-pendiente">
-              <b>+1h</b>
-              <input type="number" id="g1-${p.id}" value="${p.g1||''}" placeholder="mg/dL" onchange="actualizarHoraPost('${p.id}', 1)">
-              <input type="number" id="i1-${p.id}" value="${p.i1||''}" placeholder="+Ins" step="0.5" style="border-color:#ff3b30;" onchange="actualizarInsulinaPost('${p.id}', 1)">
-            </div>
-            <div class="col-pendiente">
-              <b>+2h</b>
-              <input type="number" id="g2-${p.id}" value="${p.g2||''}" placeholder="mg/dL" onchange="actualizarHoraPost('${p.id}', 2)">
-              <input type="number" id="i2-${p.id}" value="${p.i2||''}" placeholder="+Ins" step="0.5" style="border-color:#ff3b30;" onchange="actualizarInsulinaPost('${p.id}', 2)">
-            </div>
-            <div class="col-pendiente">
-              <b>+3h</b>
-              <input type="number" id="g3-${p.id}" value="${p.g3||''}" placeholder="mg/dL" onchange="actualizarHoraPost('${p.id}', 3)">
-              <input type="number" id="i3-${p.id}" value="${p.i3||''}" placeholder="+Ins" step="0.5" style="border-color:#ff3b30;" onchange="actualizarInsulinaPost('${p.id}', 3)">
-            </div>
-            <div class="col-pendiente">
-              <b>+4h</b>
-              <input type="number" id="g4-${p.id}" value="${p.g4||''}" placeholder="mg/dL" onchange="actualizarHoraPost('${p.id}', 4)">
-              <input type="number" id="i4-${p.id}" value="${p.i4||''}" placeholder="+Ins" step="0.5" style="border-color:#ff3b30;" onchange="actualizarInsulinaPost('${p.id}', 4)">
-            </div>
+          <strong>${al ? al.nombre : 'Plato Combinado'}</strong><br><span style="font-size:11px; color:#666;">${p.fecha}</span>
+          <div style="margin-top:8px; display:grid; grid-template-columns: repeat(4, 1fr); gap:4px;">
+            <div>+1h: <input type="number" id="g1-${p.id}" value="${p.g1||''}" style="padding:4px; font-size:12px;" onchange="actualizarHoraPost('${p.id}', 1)"></div>
+            <div>+2h: <input type="number" id="g2-${p.id}" value="${p.g2||''}" style="padding:4px; font-size:12px;" onchange="actualizarHoraPost('${p.id}', 2)"></div>
+            <div>+3h: <input type="number" id="g3-${p.id}" value="${p.g3||''}" style="padding:4px; font-size:12px;" onchange="actualizarHoraPost('${p.id}', 3)"></div>
+            <div>+4h: <input type="number" id="g4-${p.id}" value="${p.g4||''}" style="padding:4px; font-size:12px;" onchange="actualizarHoraPost('${p.id}', 4)"></div>
           </div>
         `;
         pendCard.appendChild(div);
@@ -786,17 +811,6 @@
     if(index !== -1) {
       const valor = document.getElementById(`g${horaNum}-${registroId}`).value;
       registros[index][`g${horaNum}`] = valor ? parseFloat(valor) : null;
-      localStorage.setItem("db_registros", JSON.stringify(registros));
-      actualizarApp();
-    }
-  }
-
-  function actualizarInsulinaPost(registroId, horaNum) {
-    let registros = JSON.parse(localStorage.getItem("db_registros"));
-    const index = registros.findIndex(r => r.id === registroId);
-    if(index !== -1) {
-      const valor = document.getElementById(`i${horaNum}-${registroId}`).value;
-      registros[index][`i${horaNum}`] = valor ? parseFloat(valor) : null;
       localStorage.setItem("db_registros", JSON.stringify(registros));
       actualizarApp();
     }
