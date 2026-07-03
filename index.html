@@ -496,18 +496,32 @@
   }
 
   function actualizarPrevisualizacionHistorica() {
-    const id = document.getElementById("reg-alimento-id").value;
-    const panel = document.getElementById("previsualizacion-historica");
-    if(!id) { panel.style.display = "none"; return; }
-    
-    const stats = obtenerEstadisticasAlimento(id);
-    if(stats) {
-      panel.style.display = "grid";
-      panel.innerHTML = `<div>🔄 Veces: ${stats.veces}</div><div>🩸 Pre M: ${stats.glucemiaPreMedia}</div><div>💉 Insulina M: ${stats.insulinaMedia}U</div><div>⏱️ Hist: ${stats.g1m}|${stats.g2m}|${stats.g3m}|${stats.g4m}</div>`;
-    } else {
-      panel.style.display = "block"; panel.innerHTML = "✨ Primera vez que registras este alimento.";
-    }
+  const id = document.getElementById("reg-alimento-id").value;
+  const panel = document.getElementById("previsualizacion-historica");
+  const inputRaciones = document.getElementById("reg-raciones");
+  
+  if(!id) { 
+    panel.style.display = "none"; 
+    return; 
   }
+  
+  // Buscamos el alimento en la biblioteca para conocer sus raciones habituales
+  const alimentos = JSON.parse(localStorage.getItem("db_alimentos")) || [];
+  const alimentoEncontrado = alimentos.find(a => a.id === id);
+  
+  if (alimentoEncontrado) {
+    // Rellenamos por defecto la casilla con las raciones de la biblioteca
+    inputRaciones.value = alimentoEncontrado.carbosHabituales;
+  }
+  
+  const stats = obtenerEstadisticasAlimento(id);
+  if(stats) {
+    panel.style.display = "grid";
+    panel.innerHTML = `<div>🔄 Veces: ${stats.veces}</div><div>🩸 Pre M: ${stats.glucemiaPreMedia}</div><div>💉 Insulina M: ${stats.insulinaMedia}U</div><div>⏱️ Hist: ${stats.g1m}|${stats.g2m}|${stats.g3m}|${stats.g4m}</div>`;
+  } else {
+    panel.style.display = "block"; panel.innerHTML = "✨ Primera vez que registras este alimento.";
+  }
+}
 
   function guardarRegistroComida() {
     const alimentoId = document.getElementById("reg-alimento-id").value;
