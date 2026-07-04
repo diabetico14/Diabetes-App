@@ -253,7 +253,9 @@
     .btn-accion:active {
       transform: scale(0.9);
     }
-  </style>
+  </style
+    <!-- Librería para generar PDFs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -374,6 +376,10 @@
       <input type="text" id="buscador-bib" placeholder="🔍 Buscar alimento..." oninput="renderizarBiblioteca()">
     </div>
 
+    <!-- BOTÓN NUEVO PARA EXPORTAR -->
+    <button onclick="exportarBibliotecaPDF()" style="background: #34c759; margin-bottom: 16px; box-shadow: 0 4px 8px rgba(52, 199, 89, 0.2);">
+      📥 Exportar Biblioteca a PDF
+    </button>
     <div id="lista-alimentos"></div>
   </section>
 
@@ -882,6 +888,83 @@
       localStorage.setItem("db_registros", JSON.stringify(registros));
       actualizarApp();
     }
+  }
+      async function exportarBibliotecaPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    const alimentos = JSON.parse(localStorage.getItem("db_alimentos")) || [];
+    
+    if (alimentos.length === 0) {
+      return alert("No hay alimentos en la biblioteca para exportar.");
+    }
+
+    // Ordenar alfabéticamente antes de exportar
+    const alimentosOrdenados = alimentos.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }));
+
+    // Configuración del título del PDF
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.setTextColor(49, 151, 165); // Color turquesa de tu app
+    doc.text("Biblioteca de Alimentos y Estadísticas", 14, 20);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(142, 142, 147); // Gris
+    doc.text(`Generado el: ${new Date().toLocaleDateString()}`, 14, 27);
+    
+    doc.setDrawColor(229, 229, 234);
+    doc.line(14, 32, 196, 32); // Línea divisoria
+
+    let y = 42; // Posición vertical inicial para el texto
+    
+    alimentosOrdenados.forEach((alimento, index) => {
+      // Si nos quedamos sin espacio en la página actual, creamos una nueva
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+
+      const stats = obtenerEstadisticasAlimento(alimento.id);
+      const veces = stats ? stats.veces : 0;
+      const racMedia = stats ? stats.racionesMedia : '--';
+      const insMedia = stats ? stats.insulinaMedia : '--';
+      const hist = stats ? `${stats.g1m} | ${stats.g2m} | ${stats.g3m} | ${stats.g4m}` : 'Sin histórico';
+
+      // Nombre del alimento y categoría
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.setTextColor(44, 44, 46);
+      doc.text(`${index + 1}. ${alimento.nombre} [${alimento.categoria}]`, 14, y);
+      
+      // Detalles básicos
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(85, 85, 85);
+      doc.text(`Absorción: ${alimento.absorcion}  |  Raciones habituales: ${alimento.carbosHabituales} HC`, 14, y + 6);
+      
+      // Estadísticas acumuladas
+      doc.setFont("helvetica", "italic");
+      doc.setTextColor(49, 151, 165);
+      doc.text(`Historial: Consumido ${veces} veces  (Medias: ${racMedia} HC / ${insMedia}U)  -  Mediciones post (+1h a +4h): [${hist}]`, 14, y + 12);
+      
+      // Notas si existen
+      if (alimento.notas) {
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(142, 142, 147);
+        doc.text(`Nota: ${alimento.notas}`, 14, y + 17);
+        y += 26; // Espacio que ocupa este bloque con notas
+      } else {
+        y += 20; // Espacio que ocupa este bloque sin notas
+      }
+
+      // Línea sutil de separación entre alimentos
+      doc.setDrawColor(242, 242, 247);
+      doc.line(14, y - 2, 196, y - 2);
+    });
+
+    // Descargar el archivo
+    doc.save("biblioteca_diabetes_app.pdf");
   }
 </script>
 </body>
